@@ -29,6 +29,11 @@ address.getContractBalance = function(req, res) {
 }
 
 
+/**
+
+Get ERC20 Token Name
+
+**/
 address.getNameOfCoin = function(req, res) {
 
   var userAddress = req.params.user_address;
@@ -50,6 +55,11 @@ address.getNameOfCoin = function(req, res) {
 
 
 
+/**
+
+Get ERC20 Token Ticker
+
+**/
 address.getTickerOfCoin = function(req, res) {
 
   var userAddress = req.params.user_address;
@@ -71,6 +81,11 @@ address.getTickerOfCoin = function(req, res) {
 
 
 
+/**
+
+Get ERC20 Token Decimal
+
+**/
 address.getDecimalOfCoin = function(req, res) {
 
   var userAddress = req.params.user_address;
