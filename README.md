@@ -1,6 +1,6 @@
 # Welcome To Zorba
 
-##Description
+## Description
 
 Zorba is an open source platform that helps frontend clients to communicate with the any Ethereum based blockchain layer.
 
@@ -13,3 +13,9 @@ supports Metamask
 Note: Project is underdevelopment, follow to keep track.
 
 Feel free to contribute
+
+### BRANCHES
+
+development: unstable
+
+master: stable
