@@ -22,8 +22,23 @@ if (typeof web3 !== 'undefined') {
 
 var web3Socket = new Web3(new Web3.providers.WebsocketProvider(config.get('node_socket_address')));
 
+
+
+//Abi of ERC20 Generic contract 
+var folder = config.get("folder");
+var erc20Generic = JSON.parse(fs.readFileSync(folder+"abi/ERC20_generic.json"));
+var erc20ContractAbi = erc20Generic.abi;
+
+
+
 //FUNCTIONS:---->
 
+helper.getERC20Contract = function(contractAddress) {
+    console.log(">>>")
+    console.log(JSON.stringify(erc20ContractAbi));
+    var erc20Contract =  new web3.eth.Contract(erc20ContractAbi, contractAddress);
+    return erc20Contract;
+}
 
 
 /***
