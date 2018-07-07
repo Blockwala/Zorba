@@ -15,7 +15,9 @@ supports Metamask
 Note: Project is underdevelopment, follow to keep track.
 
 yarn
+
 ganache-cli (seperate cli)
+
 sh deploy_stage.sh
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
@@ -23,29 +25,16 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 ganache-cli
+
 yarn
+
 node
+
 npm
 
 ## Running the tests
 
 Pending
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Deployment
 
