@@ -1,8 +1,10 @@
-# Welcome To Zorba
-
-## Description
+# Project Title
 
 Zorba is an open source platform that helps frontend clients to communicate with any Ethereum based blockchain layer.
+
+Zorba is under development
+
+## Getting Started
 
 Clients can get Ethereum account, transaction and contract information.
 
@@ -12,26 +14,63 @@ supports Metamask
 
 Note: Project is underdevelopment, follow to keep track.
 
-Feel free to contribute
-
-
-### DEPLOY STAGE
-
 yarn
-
-in new terminal : ganache-cli
-
+ganache-cli (seperate cli)
 sh deploy_stage.sh
 
-### DEPLOY PROD
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
+### Prerequisites
+
+ganache-cli
 yarn
+node
+npm
 
-sh deploy_prod.sh
+## Running the tests
 
+Pending
 
-### BRANCHES
+### Break down into end to end tests
 
-development: might not be stable
+Explain what these tests test and why
 
-master: stable
+```
+Give an example
+```
+
+### And coding style tests
+
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+## Deployment
+
+Use load balancers in prod
+
+## Built With
+
+* Express.js
+* Truffle
+* Web3.js
+* Ethereum Blockchain
+
+## Contributing
+
+Please read [CONTRIBUTING.md](https://github.com/Blockwala/Zorba/blob/development/Contributing.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Authors
+
+* **Karan Ahuja** - *Initial work* - [Blockwala](https://github.com/0x-genesys)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* web3.js
+
