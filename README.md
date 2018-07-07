@@ -1,4 +1,4 @@
-# Project Title
+# ZORBA
 
 Zorba is an open source platform that helps frontend clients to communicate with any Ethereum based blockchain layer.
 
