@@ -25,9 +25,21 @@ var web3Socket = new Web3(new Web3.providers.WebsocketProvider(config.get('node_
 //FUNCTIONS:---->
 
 
+
+/***
+* 
+* @Aim:
+* gets the Ethereum balance of the address
+* 
+* @Params:
+* address params required
+*
+* @Returns:
+* Promise[] 
+*
+***/
+
 helper.getBalance = function(address) {
-    console.log(JSON.stringify(helper.getCurrentProvider));
-    console.log(JSON.stringify(config.get('node_address')));
     return web3.eth.getBalance(address);
 }
 

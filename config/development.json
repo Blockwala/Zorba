@@ -1,0 +1,4 @@
+{
+ "node_address": "http://localhost:8545",
+ "node_socket_address": "ws://localhost:8545"
+}

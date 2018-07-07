@@ -6,10 +6,10 @@ var config = require('config');
 
 /**
 
-Get Ethereum Balance
+Get ERC20 Balance
 
 **/
-address.getBalance = function(req, res) {
+address.getContractBalance = function(req, res) {
 
 	var address_from_api = req.params.address;
 
@@ -19,7 +19,7 @@ address.getBalance = function(req, res) {
 			res.status(200).send(response);
 		})
 		.catch(function(error) {
-	 		res.status(500).send({message: JSON.stringify(error)});
+ 			res.status(500).send({message: JSON.stringify(error)});
 		});
 }
 
