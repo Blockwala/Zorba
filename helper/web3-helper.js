@@ -58,6 +58,42 @@ helper.getBalance = function(address) {
     return web3.eth.getBalance(address);
 }
 
+
+/***
+* 
+* @Aim:
+* gets the Ethereum block with or without transaction objec
+* 
+* @Params:
+* blockNumber block's number
+* getTxObject should include tx object ? if False(default), includes only tx hashes
+*
+* @Returns:
+* Promise[] 
+*
+***/
+
+helper.getBlock = function(blockNumber, getTxObject) {
+    return web3.eth.getBlock(blockNumber, getTxObject);
+}
+
+
+/***
+* 
+* @Aim:
+* gets the Ethereum last synced block number
+* 
+*
+* @Returns:
+* Promise[] 
+*
+***/
+
+helper.getBlockNumber = function() {
+    return web3.eth.getBlockNumber();
+}
+
+
 //get web3 provider: metamask , local or Mist
 helper.getCurrentProvider = function() {
     return web3.currentProvider;

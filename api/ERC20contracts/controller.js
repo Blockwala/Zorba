@@ -18,14 +18,14 @@ address.getContractBalance = function(req, res) {
 		.getERC20Contract(contractAddress)
     .methods
 		.balanceOf(userAddress)
-		.call(
-           function(error, result) {
-             if(error || !result) {
-               res.status(500).send(JSON.stringify({"error": errorMessage}));
-               return;
-             }
-               res.status(200).send(JSON.stringify(result));
-        });
+		.call(function(error, result) {
+      if(error || !result) {
+       res.status(500).send(JSON.stringify({"error": errorMessage}));
+       return;
+      }
+      response = { "balance": result }
+      res.status(200).send(JSON.stringify(response));
+    });
 }
 
 
@@ -43,14 +43,14 @@ address.getNameOfCoin = function(req, res) {
     .getERC20Contract(contractAddress)
     .methods
     .name()
-    .call(
-           function(error, result) {
-             if(error || !result) {
-               res.status(500).send(JSON.stringify({"error": errorMessage}));
-               return;
-             }
-               res.status(200).send(JSON.stringify(result));
-        });
+    .call(function(error, result) {
+      if(error || !result) {
+       res.status(500).send(JSON.stringify({"error": errorMessage}));
+       return;
+      }
+      response = { "name": result }
+      res.status(200).send(JSON.stringify(response));
+    });
 }
 
 
@@ -69,14 +69,14 @@ address.getTickerOfCoin = function(req, res) {
     .getERC20Contract(contractAddress)
     .methods
     .symbol()
-    .call(
-           function(error, result) {
-             if(error || !result) {
-               res.status(500).send(JSON.stringify({"error": errorMessage}));
-               return;
-             }
-               res.status(200).send(JSON.stringify(result));
-        });
+    .call(function(error, result) {
+      if(error || !result) {
+        res.status(500).send(JSON.stringify({"error": errorMessage}));
+        return;
+      }
+      response = { "ticker": result }
+      res.status(200).send(JSON.stringify(response));
+    });
 }
 
 
@@ -95,14 +95,14 @@ address.getDecimalOfCoin = function(req, res) {
     .getERC20Contract(contractAddress)
     .methods
     .decimals()
-    .call(
-           function(error, result) {
-             if(error || !result) {
-               res.status(500).send(JSON.stringify({"error": errorMessage}));
-               return;
-             }
-               res.status(200).send(JSON.stringify(result));
-        });
+    .call(function(error, result) {
+      if(error || !result) {
+       res.status(500).send(JSON.stringify({"error": errorMessage}));
+       return;
+      }
+      response = { "decimal": result }
+      res.status(200).send(JSON.stringify(response));
+    });
 }
 
 
