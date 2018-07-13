@@ -6,6 +6,6 @@ address = require('./controller.js');
 
 // GET
 router.get('/getBalance/:address', address.getBalance);
-router.get('/getTransactions', address.getTransactionsByAccount);
+router.get('/getTransactions', address.getTransactionsByAccountParallel);
 
 module.exports = router;
