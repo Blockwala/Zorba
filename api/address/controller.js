@@ -32,11 +32,7 @@ Last n blocks are queried from ethereum parity
 
 These blocks are traversed and matched for address' transactions
 
-Block query is sequential : This one is good for data migration 
-
-especially sequential query guarntees thousands of scan
-
-Pro: good for migration
+Block query is sequential : NEVER USE THIS
 
 ***/
 
@@ -91,26 +87,31 @@ address.getTransactionsByAccount = function(req, res) {
 			    }
 			    blockNumbers.push(i);
 	  		}
+	  		tx_list = [];
 
 	  		async.eachSeries(blockNumbers, function(blockNumber, callback_inner) {
 	  			web3_helper.getBlock(blockNumber, true)
 		  			.then(function(block) {
 		  				console.log(block.number)
 			  			if (block != null && block.transactions != null) {
+
 					      block.transactions.forEach( function(tx) {
 					        if (myAccountAddress == "*" || myAccountAddress == tx.from || myAccountAddress == tx.to) {
-					          console.log("  tx hash          : " + tx.hash + "\n"
-					            + "   nonce           : " + tx.nonce + "\n"
-					            + "   blockHash       : " + tx.blockHash + "\n"
-					            + "   blockNumber     : " + tx.blockNumber + "\n"
-					            + "   transactionIndex: " + tx.transactionIndex + "\n"
-					            + "   from            : " + tx.from + "\n" 
-					            + "   to              : " + tx.to + "\n"
-					            + "   value           : " + tx.value + "\n"
-					            + "   time            : " + block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString() + "\n"
-					            + "   gasPrice        : " + tx.gasPrice + "\n"
-					            + "   gas             : " + tx.gas + "\n"
-					            + "   input           : " + tx.input);
+					          var data = {}
+					          data['tx_hash'] = tx.hash;
+					          data['nonce'] = tx.nonce;
+					          data['block_hash'] = tx.blockHash;
+					          data['block_number'] = tx.blockNumber;
+					          data['transaction_index'] = tx.transactionIndex;
+					          data['from'] = tx.from;
+					          data['to'] = tx.to;
+					          data['value'] = tx.value;
+					          data['time'] =  block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString();
+					          data['gas_price'] = tx.gasPrice;
+					          data['gas'] = tx.gas;
+					          data['input'] = tx.input;
+				              console.log(data)
+				              tx_list.push(data)
 					        }
 					      })
 					    }else {
@@ -128,7 +129,7 @@ address.getTransactionsByAccount = function(req, res) {
 			      console.log(err);
 			      throw err;
 			    } else {
-			      callback(null, startBlockNumber);
+			      callback(null, tx_list);
 			    }
 			})
 		}]
@@ -138,7 +139,7 @@ address.getTransactionsByAccount = function(req, res) {
 	    	res.status(500).send({message: JSON.stringify(err)});
 	    }
 
-	     console.log('results = ', results);
+	    console.log('results = ', results);
 	    res.status(200).send(JSON.stringify(results));
 
 	})
@@ -222,29 +223,30 @@ address.getTransactionsByAccountParallel = function(req, res) {
 					  			.then(function(block) {
 					  				console.log("response came for " + JSON.stringify(block.number))
 						  			if (block != null && block.transactions != null) {
-						  			  var tx = [];	
+						  			  var tx_list = [];	
 								      block.transactions.forEach( function(tx) {
 								        if (myAccountAddress == "*" || myAccountAddress == tx.from || myAccountAddress == tx.to) {
-								          data = "  tx hash          : " + tx.hash + "\n"
-								            + "   nonce           : " + tx.nonce + "\n"
-								            + "   blockHash       : " + tx.blockHash + "\n"
-								            + "   blockNumber     : " + tx.blockNumber + "\n"
-								            + "   transactionIndex: " + tx.transactionIndex + "\n"
-								            + "   from            : " + tx.from + "\n" 
-								            + "   to              : " + tx.to + "\n"
-								            + "   value           : " + tx.value + "\n"
-								            + "   time            : " + block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString() + "\n"
-								            + "   gasPrice        : " + tx.gasPrice + "\n"
-								            + "   gas             : " + tx.gas + "\n"
-								            + "   input           : " + tx.input;
-								            console.log(data)
-								            tx.append(data)
+								          var data = {}
+								          data['tx_hash'] = tx.hash;
+								          data['nonce'] = tx.nonce;
+								          data['block_hash'] = tx.blockHash;
+								          data['block_number'] = tx.blockNumber;
+								          data['transaction_index'] = tx.transactionIndex;
+								          data['from'] = tx.from;
+								          data['to'] = tx.to;
+								          data['value'] = tx.value;
+								          data['time'] =  block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString();
+								          data['gas_price'] = tx.gasPrice;
+								          data['gas'] = tx.gas;
+								          data['input'] = tx.input;
+							              console.log(data)
+							              tx_list.push(data)
 								        }
 								      })
 								    }else {
 								    	console.log("not found in block ");
 								    }
-						  			callback_inner(null, tx);
+						  			callback_inner(null, tx_list);
 		  						})
 		  						.catch(function(error) {
 		  							console.log(">>>>>")
@@ -273,12 +275,21 @@ address.getTransactionsByAccountParallel = function(req, res) {
 		}]
 	}, function(err, results) {
 	    if(err) {
-	    	   console.log('err = ', err);
+	    	console.log('err = ', err);
 	    	res.status(500).send({message: JSON.stringify(err)});
 	    }
 
-	     console.log('results = ', results);
-	    res.status(200).send(JSON.stringify(results));
+	    responseArray = []
+
+	    for(i = 0; i < results.get_transactions.length; i++) {
+	    	var tempArray = results.get_transactions[i];
+	    	if(tempArray != []) {
+	    		responseArray = responseArray.concat(tempArray);
+	    	}
+	    }
+
+	    console.log('results = ', results);
+	    res.status(200).send(JSON.stringify(responseArray));
 
 	})
 }
