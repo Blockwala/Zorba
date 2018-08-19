@@ -43,4 +43,14 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+var Mongoose = Promise.promisifyAll(require("mongoose"));
+
+Mongoose.connect('mongodb://localhost:27017/ethereum')
+	.then(function(response) {
+		console.log("MONGO DB STATUS "+ response)
+	})
+	.catch(function(err) {
+        console.log("error "+JSON.stringify(err))
+    });
+
 module.exports = app;
