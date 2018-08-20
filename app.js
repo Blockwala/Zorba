@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var addressApiRouter = require('./api/address/index')
 var contractERC20ApiRourer = require('./api/ERC20contracts/index')
+global.Promise=require("bluebird")
 
 
 var app = express();
