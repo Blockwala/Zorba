@@ -6,6 +6,8 @@ const Web3 = require('web3'); // Importing web3
 const fs = require('fs'); // to work with filesystems
 
 const config = require('config');
+
+var sync = require('./erc20tx_sync_realtime.js')
 // config organizes hierarchical configurations for your app deployments
 
  // solidity compiler, will be useful for deploying contracts using nodejs
@@ -267,6 +269,53 @@ helper.makeSendTx = (_tx, _privateKey, successEvent, failureEvent) => {
             return makeSendSignedTx(signed, successEvent, failureEvent);
 
         });
+}
+
+helper.listenToNewBlocks = () => {
+
+    // var web3Socket =  new Web3(new Web3.providers.WebsocketProvider(config.get('node_socket_address')));
+    console.log("subscribing to "+config.get('node_socket_address'))
+    var subscription = web3Socket.eth.subscribe('newBlockHeaders', function(error, result) {
+        console.log("here")
+
+    if (!error) {
+        // console.log(result);
+        sync.newBlockMined(result.hash, web3); //call to sync tx data
+        return;
+    }
+        console.error(error);
+    })
+    .on("data", function(blockHeader) {
+        console.log(blockHeader);
+    })
+    .on("error", console.error);
+
+    // unsubscribes the subscription
+    // subscription.unsubscribe(function(error, success) {
+    //     if (success) {
+    //         console.log('Successfully unsubscribed!');
+    //     }
+    // });
+}
+
+
+helper.logs = () => {
+    var subscription = web3Socket.eth.subscribe('logs', {
+    }, function(error, result) {
+        if (!error)
+            console.log(result);
+    })
+    .on("data", function(log) { 
+        console.log(log);
+    })
+    .on("changed", function(log) {
+    });
+
+    // unsubscribes the subscription
+    subscription.unsubscribe(function(error, success){
+        if(success)
+            console.log('Successfully unsubscribed!');
+    });
 }
 
 

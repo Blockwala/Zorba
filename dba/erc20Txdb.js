@@ -1,12 +1,12 @@
 var mongoDB = require('mongoose');
 var Promise = require('bluebird');
-var erc20TransactionSchema = require('../db_schema/erc20Tx.js');
-var erc20Tx = mongoDB.model("erc20_tx", erc20TransactionSchema.erc20TransactionSchema);
+var transfers = require('../db_schema/transfers.js');
+var erc20Tx = mongoDB.model("transfers", transfers);
 erc20Tx = Promise.promisifyAll(erc20Tx);
 
-var erc20TxOperations = {};
+var erc20TxTransfers = {};
 
-erc20TxOperations.findOne = function(_coinAddress, _userAddress) {
+erc20TxTransfers.findOne = function(_coinAddress, _userAddress) {
     return erc20Tx.find({$and : [
 
     	{address: _coinAddress}, 
@@ -16,12 +16,16 @@ erc20TxOperations.findOne = function(_coinAddress, _userAddress) {
     });
 }
 
-erc20TxOperations.create = function(data) {
+erc20TxTransfers.create = function(data) {
 	return erc20Tx.create(data);
 }
 
-erc20TxOperations.insertIfNotExists = function(data) {
+erc20TxTransfers.insertIfNotExists = function(data) {
 	return erc20Tx.update({"$setOnInsert": {data}}, {upsert: true})
 }
 
-module.exports.erc20TxOperations = erc20TxOperations;
+erc20TxTransfers.UpdateOrInsert = function(event) {
+	return erc20Tx.update({'transactionHash': event.transactionHash}, event, {upsert: true})
+}
+
+module.exports = erc20TxTransfers;

@@ -32,21 +32,26 @@ Sample tx
 
 var mongoose = require('mongoose');
 
-var erc20TransactionSchema = mongoose.Schema({
+var transfers = mongoose.Schema({
 		symbol: String,
-        address: String, //coin contract address
-        blockHash: String,
-        blockNumber: Number,
-        transactionHash: String,
-        transactionIndex: Number,
-        from: String,
-        to: String,
-        value: String, //convert to int and devide by 8 after getting
-        signature: String,
-        event: String,
-        entry_time: Date
+    address: String, //coin contract address
+    blockHash: String,
+    blockNumber: Number,
+    transactionHash: String,
+    transactionIndex: Number,
+    from: String,
+    to: String,
+    value: String, //convert to int and devide by 8 after getting
+    signature: String,
+    event: String,
+    entry_time: Date,
+    returnValues: {
+      from:String,
+      to:String,
+      value:Number
+    }
 });
 
 //todo create indexes
 
-module.exports.erc20TransactionSchema = erc20TransactionSchema;
+module.exports = transfers;

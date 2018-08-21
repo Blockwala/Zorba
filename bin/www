@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('zorba:server');
 var http = require('http');
-
+var helper = require('../helper/web3-helper.js')
 /**
  * Get port from environment and store in Express.
  */
@@ -87,4 +87,10 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  doInitialWork();
+}
+
+function doInitialWork() {
+  helper.listenToNewBlocks();
+  // helper.logs()
 }
