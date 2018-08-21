@@ -283,12 +283,18 @@ helper.listenToNewBlocks = () => {
         sync.newBlockMined(result.hash, web3); //call to sync tx data
         return;
     }
+        console.log("An error occurred after subscribing, resubscribing to block events");
         console.error(error);
+        listenToNewBlocks();
     })
     .on("data", function(blockHeader) {
         console.log(blockHeader);
     })
-    .on("error", console.error);
+    .on("error", function(error){
+        console.log("An error occurred while subscribing, resubscribing to block events");
+        console.log("Error was "+error);
+        listenToNewBlocks();
+    });
 
     // unsubscribes the subscription
     // subscription.unsubscribe(function(error, success) {
