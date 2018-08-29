@@ -3,6 +3,8 @@ var address = {};
 var Promise = require("bluebird");
 var web3_helper = require('../../helper/web3-helper.js');
 var config = require('config');
+var erc20Txdb = require('../../dba/erc20Txdb.js')
+
 
 /**
 
@@ -103,6 +105,32 @@ address.getDecimalOfCoin = function(req, res) {
       response = { "decimal": result }
       res.status(200).send(JSON.stringify(response));
     });
+}
+
+
+
+
+/**
+
+Get ERC20 Transaction details
+
+**/
+address.getTransactionsFromContractForUser = function(req, res) {
+
+var userAddress = req.params.user_address;
+var contractAddress = req.params.contract_address;
+// var requiredFields = ['returnValues', 'blockHash', 'blockNumber', 'transactionHash', 'symbol', 'address'];
+var requiredFields = 'returnValues blockHash blockNumber transactionHash symbol address';
+
+
+erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
+  .then(function(response) {
+    res.status(200).send(response);
+  })
+  .catch(function(error) {
+    res.status(500).send(error);
+  });
+
 }
 
 

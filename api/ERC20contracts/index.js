@@ -9,6 +9,7 @@ router.get('/getContractBalance/:contract_address/:user_address', contracts.getC
 router.get('/getTicker/:contract_address', contracts.getTickerOfCoin);
 router.get('/getName/:contract_address', contracts.getNameOfCoin);
 router.get('/getDecimals/:contract_address', contracts.getDecimalOfCoin);
+router.get('/getTransactions/:contract_address/:user_address', contracts.getTransactionsFromContractForUser);
 
 
 module.exports = router;
