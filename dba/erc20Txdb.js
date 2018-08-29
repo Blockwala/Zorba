@@ -6,15 +6,17 @@ erc20Tx = Promise.promisifyAll(erc20Tx);
 
 var erc20TxTransfers = {};
 
-erc20TxTransfers.findOne = function(_coinAddress, _userAddress) {
-    return erc20Tx.find({$and : [
+erc20TxTransfers.findOne = function(_coinAddress, _userAddress, _requiredFields) {
 
+	query = {$and : [
     	{address: _coinAddress}, 
-    	{$or : [ {from:_userAddress}, {to:_userAddress} ]} 
-
-    ]
-    });
+    	{$or : [ {'returnValues.from':_userAddress}, {'returnValues.to':_userAddress} ]} 
+    	]
+    }
+    console.log(JSON.stringify(query));
+    return erc20Tx.find(query).select(_requiredFields);
 }
+
 
 erc20TxTransfers.create = function(data) {
 	return erc20Tx.create(data);

@@ -1,5 +1,7 @@
 {
  "node_address": "http://52.221.208.27:8545",
  "node_socket_address": "ws://52.221.208.27:8546",
- "folder": "/Users/karanahuja/Workspace/Ethereum/Zorba/"
+ "folder": "/Users/karanahuja/Workspace/Ethereum/Zorba/",
+ "test": true,
+ "mongo": "mongodb://explorer.blockwala.io:27017/ethereum"
 }

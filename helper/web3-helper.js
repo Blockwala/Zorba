@@ -273,6 +273,11 @@ helper.makeSendTx = (_tx, _privateKey, successEvent, failureEvent) => {
 
 helper.listenToNewBlocks = () => {
 
+    if(config.test == true) {
+        console.log("Not running sync for test");
+        return;
+    }
+
     // var web3Socket =  new Web3(new Web3.providers.WebsocketProvider(config.get('node_socket_address')));
     console.log("subscribing to "+config.get('node_socket_address'))
     var subscription = web3Socket.eth.subscribe('newBlockHeaders', function(error, result) {

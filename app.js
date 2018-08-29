@@ -4,12 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const config = require('config');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var addressApiRouter = require('./api/address/index')
 var contractERC20ApiRourer = require('./api/ERC20contracts/index')
 global.Promise=require("bluebird")
-
 
 var app = express();
 
@@ -46,7 +47,7 @@ app.use(function(err, req, res, next) {
 
 var Mongoose = Promise.promisifyAll(require("mongoose"));
 
-Mongoose.connect('mongodb://localhost:27017/ethereum')
+Mongoose.connect(config.mongo)
 	.then(function(response) {
 		console.log("MONGO DB STATUS "+ response)
 	})
