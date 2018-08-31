@@ -7,7 +7,7 @@ ethTx = Promise.promisifyAll(ethTx);
 var ethTxTransfers = {};
 
 ethTxTransfers.findOne = function(_userAddress, _requiredFields) {
-    
+
 	query = {
         $or : 
         [ 
@@ -30,7 +30,7 @@ ethTxTransfers.insertIfNotExists = function(data) {
 }
 
 ethTxTransfers.UpdateOrInsert = function(event) {
-	return ethTx.update({'transactionHash': event.transactionHash}, event, {upsert: true})
+	return ethTx.update({'hash': event.transactionHash}, event, {upsert: true})
 }
 
 module.exports = ethTxTransfers;

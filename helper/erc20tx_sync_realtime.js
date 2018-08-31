@@ -7,6 +7,7 @@ const config = require('config');
 var folder = config.folder;
 var erc20Generic = JSON.parse(fs.readFileSync(folder+"/abi/ERC20_generic.json"));
 var erc20Txdb = require('../dba/erc20Txdb.js')
+var ethTxdb = require('../dba/ethTxdb.js')
 
 /*****
 
@@ -70,7 +71,7 @@ sync.newBlockMined = function (blockHash, web3) {
 					      throw err;
 					    } else {
 					      sync.erc20TransferEvents(txs, web3);
-					      // sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3);
+					      sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3);
 					    }
 					});
 			    }
@@ -104,9 +105,18 @@ sync.erc20TransferEvents = function(lastMinedTxs, web3) {
 	// })
 
 	console.log('---------------------shortlisted txs');
-	console.log(regularTxs[0])
+	migrateEthToMongo(regularTxs)
 
 }
+
+migrateEthToMongo = function(txs) {
+	_.forEach(txs, function(tx) {
+		ethTxdb.UpdateOrInsert(tx)
+		.then(console.log)
+		.catch(console.log)
+	})
+}
+
 
 /*****
 Aim: Async match of txs to live erc20
