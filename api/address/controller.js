@@ -168,6 +168,8 @@ address.getTransactionsByAccountParallel = function(req, res) {
 	var startBlockNumber = req.query.start_block;
 	var endBlockNumber = req.query.end_block;
 
+	var blockBucket = 1000;
+
 	console.log("myAccountAddress "+myAccountAddress);
 	console.log("startBlockNumber "+startBlockNumber);
 	console.log("endBlockNumber "+endBlockNumber);
@@ -194,7 +196,7 @@ address.getTransactionsByAccountParallel = function(req, res) {
 			console.log(endblockNumberLocal)
 			console.log(startBlockNumber)
 			if(startBlockNumber == null) {
-				startBlockNumber = endblockNumberLocal - 100;
+				startBlockNumber = endblockNumberLocal - blockBucket;
 			}
 			callback(null, startBlockNumber);
 		}],

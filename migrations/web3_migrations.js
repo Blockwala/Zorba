@@ -65,7 +65,7 @@ helper.getAllTransferEvents = function(contractAddress, start, stop) {
     console.log(">>>>options "+JSON.stringify(options)); 
 
     return helper.getERC20Contract(contractAddress)
-    .getPastEvents('Transfer', 
+            .getPastEvents('Transfer', 
                     options,
                     function(error, events) {
                         if(error) {
@@ -298,5 +298,29 @@ helper.makeSendTx = (_tx, _privateKey, successEvent, failureEvent) => {
         });
 }
 
+/**
+* @Aim:
+* 
+* get transaction count for provided block Number
+*
+*/
+helper.getTransactionCount = (_blockHashorNumber) => {
+    return web3.eth.getBlockTransactionCount(_blockHashorNumber) //get block tx count
+}
+
+
+
+/**
+* @Aim
+* get Transaction from block where block hash/number and index are provided
+
+*@Params:
+* 1. _blockHashorNumber: hash or number of the block from which transaction has to be pulled out of
+* 2. _index : Index of the transaction being pulled out
+*
+**/
+helper.getTransactionFromBlock = (_blockHashorNumber, _index) => {
+    return web3.eth.getTransactionFromBlock(_blockHashorNumber, _index)
+}
 
 module.exports = helper;

@@ -69,7 +69,8 @@ sync.newBlockMined = function (blockHash, web3) {
 					      console.log(err);
 					      throw err;
 					    } else {
-					      sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3);
+					      sync.erc20TransferEvents(txs, web3);
+					      // sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3);
 					    }
 					});
 			    }
@@ -78,8 +79,40 @@ sync.newBlockMined = function (blockHash, web3) {
     .catch(console.log);
 }
 
+
+
+sync.erc20TransferEvents = function(lastMinedTxs, web3) {
+
+	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
+
+	//shortlist non erc20 tx from list of erc20 address we have
+	var regularTxs = _.filter(lastMinedTxs, function(tx) {
+		if (tx == null || tx == undefined || tx.to == undefined || tx.value == undefined || tx.value == 0) {
+			return false;
+		}
+		console.log(tx.to);
+		console.log(tx.value);
+		console.log(tx.hash);
+		return (_.indexOf(liveErc20TokenAddresses, tx.to.toString()) <= -1);
+	});
+
+	// console.log('---------------------filter txs on value');
+
+	// var regularTxs = _.filter(regularTxs, function(tx) {
+	// 	console.log(tx.value);
+	// 	return tx.value != undefined ;
+	// })
+
+	console.log('---------------------shortlisted txs');
+	console.log(regularTxs[0])
+
+}
+
 /*****
 Aim: Async match of txs to live erc20
+
+Note: Regular txs called by web3.eth.getTransaction do not contain erc20 contract meta-data hence we have to requery them
+after identifying
 
 Steps:
 
@@ -156,7 +189,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
         	var task =	function(callback_inner) {
 					 		new web3.eth
 					 		.Contract(erc20ContractAbi, erc20Address)
-						    .getPastEvents('Transfer', options,function(error, events) {
+						    .getPastEvents('Transfer', options, function(error, events) {
 		                        if(error) {
 		                            console.log("error "+error); 
 		                        }
