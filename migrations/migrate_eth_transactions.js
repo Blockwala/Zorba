@@ -4,10 +4,9 @@ var Promise = require("bluebird");
 var web3_helper = require('./web3_migrations.js');
 var async = require('async');
 var _ = require('lodash');
-// var erc20Txdb = require("../dba/erc20Txdb.js").erc20TxOperations
+var erc20_live_tokens = require('./erc20_live_tokens.json');
 var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
-var erc20_live_tokens = require('./erc20_live_tokens.json');
 
 var bucket_size = 20000;
 
@@ -56,7 +55,7 @@ start_parsing = function() {
 				error_script("last block is null");
 			}else {
 				blockNumbers = [];
-				for(index = latestBlockNumber - bucket ; index <= latestBlockNumber; index++) { //loop on tx count
+				for(index = latestBlockNumber - bucket_size ; index <= latestBlockNumber; index++) { //loop on tx count
 		        	blockNumbers.push(index);
 		        }
 
@@ -100,6 +99,9 @@ Step 5: return when all parallel tasks are executed
 
 **/
 getTransactionFromBlock = function(_blockNumber) {
+	asyncTasks = []
+	txs = []
+
 	return web3_helper.getTransactionCount(_blockNumber)
 	    .then(function(count) {
 
@@ -119,6 +121,8 @@ getTransactionFromBlock = function(_blockNumber) {
 						            	// console.log(tx)
 						            	if(tx != null && tx != undefined && tx.to != null) {
 						            		txs.push(tx);
+						            	}else {
+						            		console.log(tx)
 						            	}
 						            	callback_inner();
 						            })
@@ -136,17 +140,14 @@ getTransactionFromBlock = function(_blockNumber) {
 				      reject(err);
 				    } else {
 					  //Run all tasks in parallel
-					  async.parallel(asyncTasks, function(err, results) {
-						    if( err ) {
-						      console.log(err);
-						      throw err;
-						    } else {
-						      getAllValidTransactions(txs);
-						    }
-						}, function(err, results) {
+					  return async.parallel(asyncTasks, function( err, results ) {
+							console.log("End parallel");
 							if(err) {
+								console.log(err);
 								return err;
 							}
+							console.log("txs.length " + txs.length);
+							getAllValidTransactions(txs);
 							return results;
 						});
 				    }
@@ -167,34 +168,29 @@ filters out all invalid transactions. A transactio is INVALID ethereum transfer 
 4 -> value parameter of tx object is undefined
 5 -> value parameter of tx object is 0
 
+6 -> to address should not be erc20 address
+
 
 Otherwise its a valid ethereum transfer transaction and should be included in the result.
 ****/
 
 getAllValidTransactions = function(lastMinedTxs) {
 
+	console.log("lastMinedTxs.length "+lastMinedTxs.length)
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
 
-	//shortlist non erc20 tx from list of erc20 address we have
+	//shortlist non erc20 tx by running through list of erc20 address we have and looking for -ve cases
 	var regularTxs = _.filter(lastMinedTxs, function(tx) {
 		if (tx == null || tx == undefined || tx.to == undefined || tx.value == undefined || tx.value == 0) {
 			return false;
 		}
-		console.log(tx.to);
-		console.log(tx.value);
-		console.log(tx.hash);
+		console.log("tx.value "+tx.value)
 		return (_.indexOf(liveErc20TokenAddresses, tx.to.toString()) <= -1);
 	});
 
-	// console.log('---------------------filter txs on value');
-
-	// var regularTxs = _.filter(regularTxs, function(tx) {
-	// 	console.log(tx.value);
-	// 	return tx.value != undefined ;
-	// })
-
 	console.log('---------------------shortlisted txs');
-	console.log(regularTxs[0])
+	console.log("regularTxs.length "+regularTxs.length)
+	migrate_to_mongo(regularTxs); //MONGO
 
 }
 
@@ -221,26 +217,18 @@ p = function(message) {
 
 /****
 
-Scan over all the events returned from ethereum chain
-
-and push them to mongo db
+Migrate shortlisted data to mongod
 
 @Params
 
-arrayOfEvents : Array of events returned form Ethereum
+txs : Array of txs which are valid eth transfer tx
 
 ***/
-scan_and_migrate = function(arrayOfEvents, symbol) {
-	p("-------Received Events")
-	p(symbol)
-	async.eachSeries(arrayOfEvents, function(event, callback) {
-		// p(event)
-		if(symbol != undefined) {
-			event['symbol'] = symbol;
-		}
-		p(event.transactionHash)
-		dbo.collection("transfers")//.insertOne(event)
-		.update({'transactionHash': event.transactionHash}, event, {upsert: true})
+migrate_to_mongo = function(txs) {
+	async.eachSeries(txs, function(tx, callback) {
+		p(tx.hash)
+		dbo.collection("transactions")//.insertOne(event)
+		.update({'hash': tx.hash}, tx, {upsert: true})
 		.then(function(response) {
 			callback();
 		})
