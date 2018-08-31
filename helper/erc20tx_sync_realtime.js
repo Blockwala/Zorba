@@ -91,9 +91,9 @@ sync.erc20TransferEvents = function(lastMinedTxs, web3) {
 		if (tx == null || tx == undefined || tx.to == undefined || tx.value == undefined || tx.value == 0) {
 			return false;
 		}
-		console.log(tx.to);
-		console.log(tx.value);
-		console.log(tx.hash);
+		// console.log(tx.to);
+		// console.log(tx.value);
+		// console.log(tx.hash);
 		return (_.indexOf(liveErc20TokenAddresses, tx.to.toString()) <= -1);
 	});
 
@@ -112,8 +112,8 @@ sync.erc20TransferEvents = function(lastMinedTxs, web3) {
 migrateEthToMongo = function(txs) {
 	_.forEach(txs, function(tx) {
 		ethTxdb.UpdateOrInsert(tx)
-		.then(console.log)
-		.catch(console.log)
+		.then()
+		.catch()
 	})
 }
 
@@ -232,8 +232,8 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 sync.storeInMongo = function(transferEvents) {
 	_.forEach(transferEvents, function(event) {
 		erc20Txdb.UpdateOrInsert(event)
-		.then(console.log)
-		.catch(console.log)
+		.then()
+		.catch()
 	})
 }
 
