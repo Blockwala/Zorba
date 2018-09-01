@@ -38,7 +38,7 @@ address.getAccountInformation = function(req, res) {
 			ethTxdb.findOne(ethAddress)
 				.then(function(transactions) {
 					console.log(transactions);
-					response = { "balance": balance, "transactions" : transactions }
+					response = { "balance": balance, "transactions" : transactions, "address": ethAddress }
 					res.status(200).send(response);
 				})
 				.catch(function(error) {
