@@ -8,7 +8,7 @@ var erc20_live_tokens = require('./erc20_live_tokens.json');
 var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
 
-var bucket_size = 20000;
+var bucket_size = 100000;
 
 //Total blocks parsed are bucket_size
 
@@ -48,7 +48,7 @@ start_parsing = function() {
 	return web3_helper.getBlockNumber()
 		.then(function(response) {
 
-			console.log(">>>>2 " + response)
+			console.log("BLOCK NUMBER -------------- " + response)
 			latestBlockNumber = Number(response);
 			
 			if(latestBlockNumber == undefined) {
@@ -113,8 +113,9 @@ getTransactionFromBlock = function(_blockNumber) {
 	        }
 
 
-	        async.eachSeries(indexes, function(_index, callback_outer) {
+	        return async.eachSeries(indexes, function(_index, callback_outer) {
 		        	var task =	function(callback_inner) {
+		        					console.log("$$$$$$$ Building transaction search " + _blockNumber + " _index "+_index)
 		        					web3_helper.getTransactionFromBlock(_blockNumber, _index)
 						 			 //get tx at index
 						            .then(function(tx) {
@@ -141,13 +142,13 @@ getTransactionFromBlock = function(_blockNumber) {
 				    } else {
 					  //Run all tasks in parallel
 					  return async.parallel(asyncTasks, function( err, results ) {
-							console.log("End parallel");
+							console.log("!!!!!!!!! Ran Transaction search for "+_blockNumber);
 							if(err) {
 								console.log(err);
 								return err;
 							}
 							console.log("txs.length " + txs.length);
-							getAllValidTransactions(txs);
+							getAllValidTransactions(txs, _blockNumber);
 							return results;
 						});
 				    }
@@ -174,9 +175,10 @@ filters out all invalid transactions. A transactio is INVALID ethereum transfer 
 Otherwise its a valid ethereum transfer transaction and should be included in the result.
 ****/
 
-getAllValidTransactions = function(lastMinedTxs) {
+getAllValidTransactions = function(lastMinedTxs, blockNumber) {
 
-	console.log("lastMinedTxs.length "+lastMinedTxs.length)
+	console.log("###### lastMinedTxs.length "+lastMinedTxs.length)
+	console.log("###### running for "+blockNumber)
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
 
 	//shortlist non erc20 tx by running through list of erc20 address we have and looking for -ve cases
@@ -190,6 +192,7 @@ getAllValidTransactions = function(lastMinedTxs) {
 
 	console.log('---------------------shortlisted txs');
 	console.log("regularTxs.length "+regularTxs.length)
+	console.log("store in mongo for "+blockNumber)
 	migrate_to_mongo(regularTxs); //MONGO
 
 }
@@ -225,12 +228,10 @@ txs : Array of txs which are valid eth transfer tx
 
 ***/
 migrate_to_mongo = function(txs) {
-	async.eachSeries(txs, function(tx, callback) {
-		p(tx.hash)
+	_.forEach(txs, function(tx) {
 		dbo.collection("transactions")//.insertOne(event)
 		.update({'hash': tx.hash}, tx, {upsert: true})
 		.then(function(response) {
-			callback();
 		})
 		.catch(function(error) {
 			p(error)

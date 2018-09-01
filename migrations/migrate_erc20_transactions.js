@@ -11,7 +11,6 @@ var erc20_live_tokens = require('./erc20_live_tokens.json');
 
 var bucket_size = 10000;
 
-
 var dbo;
 
 /********
