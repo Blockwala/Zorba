@@ -11,8 +11,8 @@ ethTxTransfers.findOne = function(_userAddress, _requiredFields) {
 	query = {
         $or : 
         [ 
-          {'returnValues.from':_userAddress}, 
-          {'returnValues.to':_userAddress} 
+          {'from':_userAddress}, 
+          {'to':_userAddress} 
         ]
     }; 
 

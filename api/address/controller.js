@@ -4,6 +4,7 @@ var Promise = require("bluebird");
 var web3_helper = require('../../helper/web3-helper.js');
 var config = require('config');
 var async = require('async');
+var ethTxdb = require('../../dba/ethTxdb.js')
 
 /**
 
@@ -24,7 +25,28 @@ address.getBalance = function(req, res) {
 }
 
 
+address.getAccountInformation = function(req, res) {
+	var address = req.params.address;
+ 	web3_helper.getBalance(address)
+		.then(function(balance) {
+			ethTxdb.findOne(address)
+				.then(function(transactions) {
+					console.log(transactions);
+					response = { "balance": balance, "transactions" : transactions }
+					res.status(200).send(response);
+				})
+				.catch(function(error) {
+					res.status(500).send({message: JSON.stringify(error)});
+				})
+		})
+		.catch(function(error) {
+	 		res.status(500).send({message: JSON.stringify(error)});
+		});
+}
+
+
 /****
+Deprecated
 
 GET TRANSACTIONS
 
@@ -147,6 +169,7 @@ address.getTransactionsByAccount = function(req, res) {
 
 
 /****
+Deprecated
 
 GET TRANSACTIONS
 

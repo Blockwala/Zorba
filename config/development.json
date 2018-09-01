@@ -3,5 +3,5 @@
  "node_socket_address": "ws://52.221.208.27:8546",
  "folder": "/Users/karanahuja/Workspace/Ethereum/Zorba/",
  "test": true,
- "mongo": "mongodb://localhost:27017/ethereum"
+ "mongo": "mongodb://explorer.blockwala.io:27017/ethereum"
 }
