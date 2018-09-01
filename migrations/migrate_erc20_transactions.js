@@ -9,7 +9,7 @@ var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
 var erc20_live_tokens = require('./erc20_live_tokens.json');
 
-var bucket_size = 10000;
+var bucket_size = 5000;
 
 var dbo;
 
@@ -309,7 +309,9 @@ scan_and_migrate = function(arrayOfEvents, symbol) {
 	p("-------Received Events")
 	p(symbol)
 	_.forEach(arrayOfEvents, function(event) {
+		if(event == undefined) return;
 		// p(event)
+		event = to_lower_case(event);
 		if(symbol != undefined) {
 			event['symbol'] = symbol;
 		}
@@ -324,4 +326,13 @@ scan_and_migrate = function(arrayOfEvents, symbol) {
 	});
 }
 
-
+to_lower_case = function(obj) {
+	for (var k in obj){
+	    if (typeof obj[k] == "object" && obj[k] !== null)
+	        to_lower_case(obj[k]);
+	    else if(typeof obj[k] == "string") {
+			obj[k] = obj[k].toLowerCase();
+		}
+	}
+	return obj;
+}

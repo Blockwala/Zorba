@@ -70,7 +70,7 @@ sync.newBlockMined = function (blockHash, web3) {
 					      console.log(err);
 					      throw err;
 					    } else {
-					      sync.erc20TransferEvents(txs, web3);
+					      sync.ethTransfer(txs, web3);
 					      sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3);
 					    }
 					});
@@ -82,7 +82,7 @@ sync.newBlockMined = function (blockHash, web3) {
 
 
 
-sync.erc20TransferEvents = function(lastMinedTxs, web3) {
+sync.ethTransfer = function(lastMinedTxs, web3) {
 
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
 
@@ -111,6 +111,7 @@ sync.erc20TransferEvents = function(lastMinedTxs, web3) {
 
 migrateEthToMongo = function(txs) {
 	_.forEach(txs, function(tx) {
+		tx = to_lower_case(tx)
 		ethTxdb.UpdateOrInsert(tx)
 		.then()
 		.catch()
@@ -231,11 +232,23 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 
 sync.storeInMongo = function(transferEvents) {
 	_.forEach(transferEvents, function(event) {
+		if(event == undefined) return;
+		event = to_lower_case(event)
 		erc20Txdb.UpdateOrInsert(event)
 		.then()
 		.catch()
 	})
 }
 
+to_lower_case = function(obj) {
+	for (var k in obj) {
+	    if (typeof obj[k] == "object" && obj[k] !== null)
+	        to_lower_case(obj[k]);
+	    else if(typeof obj[k] == "string") {
+			obj[k] = obj[k].toLowerCase();
+		}
+	}
+	return obj;
+}
 
 module.exports = sync;

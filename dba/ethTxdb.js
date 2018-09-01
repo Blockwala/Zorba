@@ -7,7 +7,7 @@ ethTx = Promise.promisifyAll(ethTx);
 var ethTxTransfers = {};
 
 ethTxTransfers.findOne = function(_userAddress, _requiredFields) {
-
+    _userAddress = _userAddress.toLowerCase();
 	query = {
         $or : 
         [ 

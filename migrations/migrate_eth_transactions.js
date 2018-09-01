@@ -216,8 +216,6 @@ p = function(message) {
 	console.log(message)
 }
 
-
-
 /****
 
 Migrate shortlisted data to mongod
@@ -229,6 +227,7 @@ txs : Array of txs which are valid eth transfer tx
 ***/
 migrate_to_mongo = function(txs) {
 	_.forEach(txs, function(tx) {
+		tx = to_lower_case(tx);
 		console.log("=======>"+tx.hash);
 		dbo.collection("transactions")//.insertOne(event)
 		.update({'hash': tx.hash}, tx, {upsert: true})
@@ -238,6 +237,18 @@ migrate_to_mongo = function(txs) {
 			p(error)
 		})
 	})
+}
+
+
+to_lower_case = function(obj) {
+	for (var k in obj) {
+	    if (typeof obj[k] == "object" && obj[k] !== null)
+	        to_lower_case(obj[k]);
+	    else if(typeof obj[k] == "string") {
+			obj[k] = obj[k].toLowerCase();
+		}
+	}
+	return obj;
 }
 
 
