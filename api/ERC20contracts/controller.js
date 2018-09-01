@@ -134,5 +134,38 @@ erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
 }
 
 
+address.getAccount = function(req, res) {
+  var userAddress = req.params.user_address;
+  var contractAddress = req.params.contract_address;
+  var requiredFields = 'returnValues blockHash blockNumber transactionHash symbol address';
+
+  web3_helper
+    .getERC20Contract(contractAddress)
+    .methods
+    .balanceOf(userAddress)
+    .call(function(error, result) {
+      var balance = result; 
+
+      if(error || !result) {
+       res.status(500).send(JSON.stringify({"error": errorMessage}));
+      }
+
+      erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
+        .then(function(erc20Txs) {
+
+          var transactions = erc20Txs;
+
+          var response = { "balance": balance, "transactions": transactions }
+
+          res.status(200).send(response);
+        })
+        .catch(function(error) {
+          res.status(500).send(error);
+        });
+
+    });
+}
+
+
 
 module.exports = address;

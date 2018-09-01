@@ -308,7 +308,7 @@ arrayOfEvents : Array of events returned form Ethereum
 scan_and_migrate = function(arrayOfEvents, symbol) {
 	p("-------Received Events")
 	p(symbol)
-	async.eachSeries(arrayOfEvents, function(event, callback) {
+	_.forEach(arrayOfEvents, function(event) {
 		// p(event)
 		if(symbol != undefined) {
 			event['symbol'] = symbol;
@@ -317,12 +317,11 @@ scan_and_migrate = function(arrayOfEvents, symbol) {
 		dbo.collection("transfers")//.insertOne(event)
 		.update({'transactionHash': event.transactionHash}, event, {upsert: true})
 		.then(function(response) {
-			callback();
 		})
 		.catch(function(error) {
 			p(error)
 		})
-	})
+	});
 }
 
 

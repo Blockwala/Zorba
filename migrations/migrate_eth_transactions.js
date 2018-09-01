@@ -229,6 +229,7 @@ txs : Array of txs which are valid eth transfer tx
 ***/
 migrate_to_mongo = function(txs) {
 	_.forEach(txs, function(tx) {
+		console.log("=======>"+tx.hash);
 		dbo.collection("transactions")//.insertOne(event)
 		.update({'hash': tx.hash}, tx, {upsert: true})
 		.then(function(response) {

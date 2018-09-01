@@ -36,8 +36,6 @@ var erc20ContractAbi = erc20Generic.abi;
 //FUNCTIONS:---->
 
 helper.getERC20Contract = function(contractAddress) {
-    console.log(">>>")
-    console.log(JSON.stringify(erc20ContractAbi));
     var erc20Contract =  new web3.eth.Contract(erc20ContractAbi, contractAddress);
     return erc20Contract;
 }

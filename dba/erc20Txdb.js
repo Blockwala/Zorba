@@ -13,7 +13,7 @@ erc20TxTransfers.findOne = function(_coinAddress, _userAddress, _requiredFields)
     	{$or : [ {'returnValues.from':_userAddress}, {'returnValues.to':_userAddress} ]} 
     	]
     }
-    console.log(JSON.stringify(query));
+    
     return erc20Tx.find(query).select(_requiredFields);
 }
 
