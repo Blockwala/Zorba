@@ -26,10 +26,16 @@ address.getBalance = function(req, res) {
 
 
 address.getAccountInformation = function(req, res) {
-	var address = req.params.address;
- 	web3_helper.getBalance(address)
+	console.log(req.query)
+	var ethAddress = req.query.address;
+
+	if(ethAddress == undefined) {
+		res.status(500).send({message: "Address not found"});
+	}
+
+ 	web3_helper.getBalance(ethAddress)
 		.then(function(balance) {
-			ethTxdb.findOne(address)
+			ethTxdb.findOne(ethAddress)
 				.then(function(transactions) {
 					console.log(transactions);
 					response = { "balance": balance, "transactions" : transactions }
