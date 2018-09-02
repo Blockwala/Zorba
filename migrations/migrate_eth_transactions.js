@@ -60,6 +60,8 @@ start_parsing = function() {
 		        }
 
 		        async.eachSeries(blockNumbers, function (_blockNumber, callback_outer) {
+		        	var waitTill = new Date(new Date().getTime() + .1 * 1000);
+					while(waitTill > new Date()){}
 		        	console.log("Starting for "+_blockNumber);
 		        	getTransactionFromBlock(_blockNumber)
 		        		.then(function(response) {
@@ -226,7 +228,7 @@ migrate_to_mongo = function(txs) {
 			.then(function(response) {
 				if(count == txs.length) {
 					resolve(null);
-				}
+				}	
 				count ++;
 			})
 			.catch(function(error) {
