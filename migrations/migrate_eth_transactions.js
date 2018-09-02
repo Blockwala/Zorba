@@ -60,9 +60,10 @@ start_parsing = function() {
 		        }
 
 		        async.eachSeries(blockNumbers, function (_blockNumber, callback_outer) {
+		        	console.log("Starting for "+_blockNumber);
 		        	getTransactionFromBlock(_blockNumber)
 		        		.then(function(response) {
-		        			console.log("Successful execution");
+		        			console.log("Successful execution "+_blockNumber);
 		        			console.log(response)
 		        			callback_outer();
 		        		})
@@ -112,49 +113,35 @@ getTransactionFromBlock = function(_blockNumber) {
 	        	indexes.push(index);
 	        }
 
+	        return new Promise(function (resolve, reject) {
+	        	 async.eachSeries(indexes, function(_index, callback_outer) {
+					console.log("$$$$$$$ Building transaction search " + _blockNumber + " _index "+_index)
+					web3_helper.getTransactionFromBlock(_blockNumber, _index) //get tx at index
+					
+		            .then(function(tx) {
+		            	// console.log(tx)
+		            	if(tx != null && tx != undefined && tx.to != null) {
+		            		txs.push(tx);
+		            	}
+		            	callback_outer();
 
-	        return async.eachSeries(indexes, function(_index, callback_outer) {
-		        	var task =	function(callback_inner) {
-		        					console.log("$$$$$$$ Building transaction search " + _blockNumber + " _index "+_index)
-		        					web3_helper.getTransactionFromBlock(_blockNumber, _index)
-						 			 //get tx at index
-						            .then(function(tx) {
-						            	// console.log(tx)
-						            	if(tx != null && tx != undefined && tx.to != null) {
-						            		txs.push(tx);
-						            	}else {
-						            		console.log(tx)
-						            	}
-						            	callback_inner();
-						            })
-						            .catch(function(err){
-						            	console.log(err);
-						            	callback_inner();
-						            });
-						        }
-		        	
-		            asyncTasks.push(task);
-		            callback_outer();
-	        	}, function(err, results) {
-				    if( err ) {
-				      console.log(err);
-				      reject(err);
-				    } else {
-					  //Run all tasks in parallel
-					  return async.parallel(asyncTasks, function( err, results ) {
-							console.log("!!!!!!!!! Ran Transaction search for "+_blockNumber);
-							if(err) {
-								console.log(err);
-								return err;
-							}
-							console.log("txs.length " + txs.length);
-							getAllValidTransactions(txs, _blockNumber);
-							return results;
+		            })
+		            .catch(function(err) {
+		            	reject(err)
+		            	callback_outer();
+
+		            })}, function(err, results) {
+					    if( err ) {
+					      console.log(err);
+					      reject(err);
+					    } else {
+					    	resolve(getAllValidTransactions(txs, _blockNumber));
+					    }
 						});
-				    }
-			});
-	    })
-	    .catch(console.log);
+			    })
+			    .catch(console.log);
+	        });
+	       
 }
 
 
@@ -193,7 +180,7 @@ getAllValidTransactions = function(lastMinedTxs, blockNumber) {
 	console.log('---------------------shortlisted txs');
 	console.log("regularTxs.length "+regularTxs.length)
 	console.log("store in mongo for "+blockNumber)
-	migrate_to_mongo(regularTxs); //MONGO
+	return migrate_to_mongo(regularTxs); //MONGO
 
 }
 
@@ -226,17 +213,24 @@ txs : Array of txs which are valid eth transfer tx
 
 ***/
 migrate_to_mongo = function(txs) {
-	_.forEach(txs, function(tx) {
-		tx = to_lower_case(tx);
-		console.log("=======>"+tx.hash);
-		dbo.collection("transactions")//.insertOne(event)
-		.update({'hash': tx.hash}, tx, {upsert: true})
-		.then(function(response) {
+	return new Promise(function (resolve, reject) {
+		var count = 1;
+		_.forEach(txs, function(tx) {
+			tx = to_lower_case(tx);
+			console.log("=======>"+tx.hash);
+			dbo.collection("transactions")//.insertOne(event)
+			.update({'hash': tx.hash}, tx, {upsert: true})
+			.then(function(response) {
+				if(count == txs.length) {
+					resolve(null);
+				}
+				count ++;
+			})
+			.catch(function(error) {
+				p(error)
+			})
 		})
-		.catch(function(error) {
-			p(error)
-		})
-	})
+	});
 }
 
 
