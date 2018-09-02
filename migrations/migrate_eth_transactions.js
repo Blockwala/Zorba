@@ -117,7 +117,7 @@ getTransactionFromBlock = function(_blockNumber) {
 	        	 async.eachSeries(indexes, function(_index, callback_outer) {
 					console.log("$$$$$$$ Building transaction search " + _blockNumber + " _index "+_index)
 					web3_helper.getTransactionFromBlock(_blockNumber, _index) //get tx at index
-					
+
 		            .then(function(tx) {
 		            	// console.log(tx)
 		            	if(tx != null && tx != undefined && tx.to != null) {
@@ -214,6 +214,9 @@ txs : Array of txs which are valid eth transfer tx
 ***/
 migrate_to_mongo = function(txs) {
 	return new Promise(function (resolve, reject) {
+
+		if(txs.length == 0) resolve(null);
+
 		var count = 1;
 		_.forEach(txs, function(tx) {
 			tx = to_lower_case(tx);
