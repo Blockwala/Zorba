@@ -30,7 +30,7 @@ start_parsing = function() {
 	.count()
 	.then(function(response) {
 		console.log(response)
-		var bucket_size = 5000
+		var bucket_size = 10000
 		var buckets = Number(response)/bucket_size
 		var index = []
 		console.log(buckets)
