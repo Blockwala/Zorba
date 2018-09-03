@@ -24,13 +24,13 @@ MongoClient.connect('mongodb://localhost:27017', function(err, db) {
 
 
 start_parsing = function() {
-	var collection = dbo.collection("transactions");
+	var collection = dbo.collection("tranfers");
 
 	collection //change collection here
 	.count()
 	.then(function(response) {
 		console.log(response)
-		var bucket_size = 500
+		var bucket_size = 5000
 		var buckets = Number(response)/bucket_size
 		var index = []
 		console.log(buckets)
@@ -52,7 +52,7 @@ start_parsing = function() {
 			.find({})
 			.limit(limit)
 			.skip(skip)
-			.sort({"blockNumber": -1});
+			.sort({"blockNumber": 1});
 
 			cursor.forEach(
 				function(doc) {
@@ -62,7 +62,7 @@ start_parsing = function() {
 					console.log(doc.hash)
 
 					collection
-					.update({'hash': doc.hash}, doc, {upsert: true})
+					.update({'transactionHash': doc.transactionHash}, doc, {upsert: true})
 
 				},
 				function(err) {
