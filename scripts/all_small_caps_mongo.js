@@ -24,13 +24,13 @@ MongoClient.connect('mongodb://localhost:27017', function(err, db) {
 
 
 start_parsing = function() {
-	var collection = dbo.collection("tranfers");
+	var collection = dbo.collection("transfers");
 
 	collection //change collection here
 	.count()
 	.then(function(response) {
 		console.log(response)
-		var bucket_size = 1000
+		var bucket_size = 5000
 		var buckets = Number(response)/bucket_size
 		var index = []
 		console.log(buckets)
