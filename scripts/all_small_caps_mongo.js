@@ -12,7 +12,7 @@ Aim:  Connect to Mongo and begin if connected
 url : url of mongo DB
 *******/
 
-MongoClient.connect('mongodb://52.221.208.27:27017', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017', function(err, db) {
   if (err) {
   	throw err;
   } else {
@@ -47,7 +47,8 @@ start_parsing = function() {
 			console.log(limit)
 			console.log(skip)
 
-			var cursor = dbo.collection("transfers")
+			var cursor = 
+			collection
 			.find({})
 			.limit(limit)
 			.skip(skip)
