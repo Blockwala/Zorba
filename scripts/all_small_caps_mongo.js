@@ -24,7 +24,7 @@ MongoClient.connect('mongodb://localhost:27017', function(err, db) {
 
 
 start_parsing = function() {
-	var collection = dbo.collection("transfers");
+	var collection = dbo.collection("transactions");
 
 	collection //change collection here
 	.count()
@@ -52,17 +52,17 @@ start_parsing = function() {
 			.find({})
 			.limit(limit)
 			.skip(skip)
-			.sort({"blockNumber": 1});
+			.sort({"blockNumber": 1}); //make sure this is indexed
 
 			cursor.forEach(
 				function(doc) {
 
 					doc = to_lower_case(doc)
 
-					console.log(doc.transactionHash)
+					console.log(doc.hash) //change var if collection change
 
 					collection
-					.update({'transactionHash': doc.transactionHash}, doc, {upsert: true})
+					.update({'hash': doc.hash}, doc, {upsert: true}) //change var if collection change
 
 				},
 				function(err) {
