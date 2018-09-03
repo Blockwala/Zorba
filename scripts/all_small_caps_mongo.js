@@ -59,7 +59,7 @@ start_parsing = function() {
 
 					doc = to_lower_case(doc)
 
-					console.log(doc.hash)
+					console.log(doc.transactionHash)
 
 					collection
 					.update({'transactionHash': doc.transactionHash}, doc, {upsert: true})
