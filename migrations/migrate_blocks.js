@@ -9,7 +9,7 @@ var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
 var erc20_live_tokens = require('./erc20_live_tokens.json');
 
-var bucket_size = 1000000;
+var bucketSize = 1000000;
 
 var dbo;
 
@@ -25,44 +25,41 @@ MongoClient.connect('mongodb://localhost:27017', function(err, db) {
 
 
 shall_we_begin = function() {
-	var blocks = []
 	web3_helper.getBlockNumber()
 		.then(function(response) {
 			console.log(">>>>2 " + response)
 			blockNumber = Number(response);
-			migrateTillBlockNumber = blockNumber - bucket_size;
-			while(blockNumber > migrateTillBlockNumber) {
-				console.log(blockNumber);
-				blocks.push(blockNumber);
-				blockNumber--;
-			}
+			migrateTillBlockNumber = blockNumber - bucketSize;
 
-			async.eachSeries(blocks, function(block, callback){
-				console.log(block)
-				return web3_helper.getBlock(block, false)
-				.then(function(response) {
-
-					console.log(response);
-					response = to_lower_case(response);
-
-					dbo.collection("blocks")
-						.update({'blockNumber': response.blockNumber}, response, {upsert: true})
+			async.whilst(
+			    function() { return blockNumber > migrateTillBlockNumber; },
+			    function(callback) {
+			        web3_helper.getBlock(blockNumber, false)
 						.then(function(response) {
-							callback();
+
+							console.log(response);
+							response = to_lower_case(response);
+
+							dbo.collection("blocks")
+								.update({'blockNumber': response.blockNumber}, response, {upsert: true})
+								.then(function(response) {
+									blockNumber--;
+									callback();
+								})
+								.catch(function(error) {
+									console.log(error);
+								})
+
 						})
 						.catch(function(error) {
 							console.log(error);
 						})
-
-				})
-				.catch(function(error) {
-					console.log(error);
-				})
-			});
-		})
-		.catch(function(error) {
-			error_script(error);
-		})
+			    },
+			    function (err, n) {
+			        // 5 seconds have passed, n = 5
+			        console.log("done")
+			    });
+	});
 }
 
 to_lower_case = function(obj) {
