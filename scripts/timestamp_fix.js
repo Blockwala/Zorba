@@ -1,26 +1,25 @@
 var Promise = require("bluebird");
-var web3_helper = require('./web3_migrations.js');
 var async = require('async');
 var _ = require('lodash');
-var erc20_live_tokens = require('./erc20_live_tokens.json');
 var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
 
-
+var dbo;
 
 MongoClient.connect('mongodb://localhost:27017', function(err, db) {
   if (err) {
   	throw err;
   } else {
   	dbo = db.db("ethereum");
-  	p(dbo)
-  	start_parsing();
+  	start();
   }
 });
 
 
-var collection = dbo.collection("transactions");
-var blockCollection = dbo.collection("blocks");
+start = function() {
+
+	var collection = dbo.collection("transactions");
+	var blockCollection = dbo.collection("blocks");
 
 	collection //change collection here
 	.count()
@@ -53,7 +52,7 @@ var blockCollection = dbo.collection("blocks");
 			cursor.forEach(
 				function(doc) {
 
-					block =  blockCollection.find({"number": blockNumber}, {"timestamp":1})
+					block =  blockCollection.find({"number": doc.blockNumber}, {"timestamp":1})
 
 					doc.timestamp = block.timestamp
 
@@ -61,7 +60,7 @@ var blockCollection = dbo.collection("blocks");
 
 					collection
 					.update({'hash': doc.hash}, doc, {upsert: true}) //change var if collection change
-					
+
 				},
 				function(err) { 
 
@@ -73,6 +72,8 @@ var blockCollection = dbo.collection("blocks");
 
 	})
 	.catch(console.log("Error"));
+
+}
 
 
 
