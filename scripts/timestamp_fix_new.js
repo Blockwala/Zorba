@@ -18,7 +18,7 @@ MongoClient.connect('mongodb://localhost:27017', function(err, db) {
 
 start = function() {
 
-	var collection = dbo.collection("transfers");
+	var collection = dbo.collection("transactions");
 	var blockCollection = dbo.collection("blocks");
 
 	blockCollection //change collection here
