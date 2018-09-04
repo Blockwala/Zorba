@@ -37,11 +37,10 @@ shall_we_begin = function() {
 			        web3_helper.getBlock(blockNumber, false)
 						.then(function(response) {
 
-							console.log(response);
 							response = to_lower_case(response);
 
 							dbo.collection("blocks")
-								.update({'blockNumber': response.blockNumber}, response, {upsert: true})
+								.update({'number': response.number}, response, {upsert: true})
 								.then(function(response) {
 									blockNumber--;
 									callback();
