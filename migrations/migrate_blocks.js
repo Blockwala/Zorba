@@ -10,6 +10,7 @@ const request = require('request');
 var erc20_live_tokens = require('./erc20_live_tokens.json');
 
 var bucketSize = 1000000;
+var differential = 23000; //keep it 0 for first time run
 
 var dbo;
 
@@ -28,7 +29,7 @@ shall_we_begin = function() {
 	web3_helper.getBlockNumber()
 		.then(function(response) {
 			console.log(">>>>2 " + response)
-			blockNumber = Number(response);
+			blockNumber = Number(response) - differential;
 			migrateTillBlockNumber = blockNumber - bucketSize;
 
 			async.whilst(
