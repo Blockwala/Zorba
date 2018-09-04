@@ -57,7 +57,7 @@ start = function() {
 					}, Infinity);
 
 			cursor.forEach(
-				function(doc) {s
+				function(doc) {
   					if (doc) q.push(doc); // dispatching doc to async.queue
 				},
 				function(err) {
