@@ -27,62 +27,21 @@ sync.newBlockMined = function (blockHash, web3) {
 	asyncTasks = []; //array of tasks to fetch tx
     txs = [] //array of to addresses from tx (we match later with supported coins)
 
-	web3.eth
-	.getBlockTransactionCount(blockHash) //get block tx count
-    .then(function(count) {
-
-    	console.log("count is "+count);
-
-    	indexes = [];
-
-        for(index = 0 ; index <= count; index++) { //loop on tx count
-        	indexes.push(index);
-        }
-
-        async.eachSeries(indexes, function(index, callback_outer) {
-
-        	var task =	function(callback_inner) {
-				 			web3.eth
-				            .getTransactionFromBlock(blockHash, index) //get tx at index
-				            .then(function(tx) {
-				            	// console.log(tx)
-				            	if(tx != null && tx != undefined && tx.to != null) {
-				            		txs.push(tx);
-				            	}
-				            	callback_inner();
-				            })
-				            .catch(function(err){
-				            	console.log(err);
-				            	callback_inner();
-				            });
-				        }
-        	
-            asyncTasks.push(task);
-            callback_outer();
-        }, function(err) {
-			    if( err ) {
-			      console.log(err);
-			      reject(err);
-			    } else {
-				  //Run all tasks in parallel
-				  async.parallel(asyncTasks, function(err, results) {
-					    if( err ) {
-					      console.log(err);
-					      throw err;
-					    } else {
-					      sync.ethTransfer(txs, web3);
-					      sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3);
-					    }
-					});
-			    }
-		});
+    web3.eth.getBlock(blockHash, true)
+    .then(function(blockObject) {
+    	var txs = blockObject.transactions;
+    	sync.ethTransfer(txs, web3, blockObject.timestamp);
+    	sync.matchErc20LiveTokensWithLastMinedTxs(txs, web3, blockObject.timestamp);
     })
-    .catch(console.log);
+    .catch(function(Error) {
+    	console.log(Error)
+    })
+
 }
 
 
 
-sync.ethTransfer = function(lastMinedTxs, web3) {
+sync.ethTransfer = function(lastMinedTxs, web3, timestamp) {
 
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
 
@@ -91,27 +50,17 @@ sync.ethTransfer = function(lastMinedTxs, web3) {
 		if (tx == null || tx == undefined || tx.to == undefined || tx.value == undefined || tx.value == 0) {
 			return false;
 		}
-		// console.log(tx.to);
-		// console.log(tx.value);
-		// console.log(tx.hash);
 		return (_.indexOf(liveErc20TokenAddresses, tx.to.toString()) <= -1);
 	});
 
-	// console.log('---------------------filter txs on value');
-
-	// var regularTxs = _.filter(regularTxs, function(tx) {
-	// 	console.log(tx.value);
-	// 	return tx.value != undefined ;
-	// })
-
 	console.log('---------------------shortlisted txs');
-	migrateEthToMongo(regularTxs)
+	migrateEthToMongo(regularTxs, timestamp)
 
 }
 
-migrateEthToMongo = function(txs) {
+migrateEthToMongo = function(txs, timestamp) {
 	_.forEach(txs, function(tx) {
-		tx = to_lower_case(tx)
+		tx = to_lower_case(tx, timestamp);
 		ethTxdb.UpdateOrInsert(tx)
 		.then()
 		.catch()
@@ -145,7 +94,7 @@ call getTransferEvents , as the name suggests it will call last block transfer e
 
 
 ******/
-sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3) {
+sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3, timestamp) {
 
 	var txRecievers = _.map(lastMinedTxs, 'to');
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
@@ -162,12 +111,15 @@ sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3) {
 	// console.log(erc20AddressesForWhichTxOccurredInLastBlock);
 
 	erc20_txs = _.filter(lastMinedTxs, function(tx) {  
+		if(tx == null || tx == undefined || tx.to == null) {
+			return false;
+		}
 		return (_.indexOf(erc20AddressesForWhichTxOccurredInLastBlock, tx.to.toString()) > -1);
 	 });
 
 	txHashesOfLastMinedErc20Txs = _.map(erc20_txs, 'hash');
 
-	sync.getTransferEvents(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber); 
+	sync.getTransferEvents(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber, timestamp); 
 	
 }
 
@@ -183,7 +135,7 @@ if match then store it
 
 **/
 
-sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber) {
+sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber, timestamp) {
 
 	var erc20ContractAbi = erc20Generic.abi;
 	var options = {}
@@ -223,24 +175,24 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 					    } else {
 					    	console.log("--------")
 					    	// console.log(JSON.stringify(transferEvents));
-					    	sync.storeInMongo(transferEvents)
+					    	sync.storeInMongo(transferEvents, timestamp)
 					    }
 					});
 			    }
 		});
 }
 
-sync.storeInMongo = function(transferEvents) {
+sync.storeInMongo = function(transferEvents, timestamp) {
 	_.forEach(transferEvents, function(event) {
 		if(event == undefined) return;
-		event = to_lower_case(event)
+		event = to_lower_case(event, timestamp)
 		erc20Txdb.UpdateOrInsert(event)
 		.then()
 		.catch()
 	})
 }
 
-to_lower_case = function(obj) {
+to_lower_case = function(obj, timestamp) {
 	for (var k in obj) {
 	    if (typeof obj[k] == "object" && obj[k] !== null)
 	        to_lower_case(obj[k]);
@@ -248,6 +200,7 @@ to_lower_case = function(obj) {
 			obj[k] = obj[k].toLowerCase();
 		}
 	}
+	if(timestamp != undefined) obj.timestamp = timestamp;
 	return obj;
 }
 

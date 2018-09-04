@@ -49,7 +49,8 @@ var transfers = mongoose.Schema({
       from:String,
       to:String,
       value:Number
-    }
+    },
+    timestamp: Number
 });
 
 //todo create indexes

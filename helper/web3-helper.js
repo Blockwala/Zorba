@@ -7,7 +7,7 @@ const fs = require('fs'); // to work with filesystems
 
 const config = require('config');
 
-var sync = require('./erc20tx_sync_realtime.js')
+var sync = require('./tx_sync_realtime.js')
 // config organizes hierarchical configurations for your app deployments
 
  // solidity compiler, will be useful for deploying contracts using nodejs
@@ -271,10 +271,10 @@ helper.makeSendTx = (_tx, _privateKey, successEvent, failureEvent) => {
 
 helper.listenToNewBlocks = () => {
 
-    if(config.test == true) {
-        console.log("Not running sync for test");
-        return;
-    }
+    // if(config.test == true) {
+    //     console.log("Not running sync for test");
+    //     return;
+    // }
 
     // var web3Socket =  new Web3(new Web3.providers.WebsocketProvider(config.get('node_socket_address')));
     console.log("subscribing to "+config.get('node_socket_address'))

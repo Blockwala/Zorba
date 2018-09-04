@@ -104,45 +104,17 @@ Step 5: return when all parallel tasks are executed
 getTransactionFromBlock = function(_blockNumber) {
 	asyncTasks = []
 	txs = []
-
-	return web3_helper.getTransactionCount(_blockNumber)
-	    .then(function(count) {
-
-	    	console.log("count is "+count);
-	    	indexes = [];
-
-	        for(index = 0 ; index <= count; index++) { //loop on tx count
-	        	indexes.push(index);
-	        }
-
-	        return new Promise(function (resolve, reject) {
-	        	 async.eachSeries(indexes, function(_index, callback_outer) {
-					console.log("$$$$$$$ Building transaction search " + _blockNumber + " _index "+_index)
-					web3_helper.getTransactionFromBlock(_blockNumber, _index) //get tx at index
-
-		            .then(function(tx) {
-		            	// console.log(tx)
-		            	if(tx != null && tx != undefined && tx.to != null) {
-		            		txs.push(tx);
-		            	}
-		            	callback_outer();
-
-		            })
-		            .catch(function(err) {
-		            	reject(err)
-		            	callback_outer();
-
-		            })}, function(err, results) {
-					    if( err ) {
-					      console.log(err);
-					      reject(err);
-					    } else {
-					    	resolve(getAllValidTransactions(txs, _blockNumber));
-					    }
-						});
-			    })
-			    .catch(console.log);
-	        });
+    return new Promise(function (resolve, reject) {
+	    web3.eth.getBlock(_blockNumber, true)
+	    .then(function(blockObject) {
+	    	var txs = blockObject.transactions;
+	    	var timestamp = blockObject.timestamp;
+	    	resolve(getAllValidTransactions(txs, _blockNumber, timestamp));
+	    })
+	    .catch(function(Error) {
+	    	console.log(Error)
+	    })
+	});
 	       
 }
 
@@ -164,7 +136,7 @@ filters out all invalid transactions. A transactio is INVALID ethereum transfer 
 Otherwise its a valid ethereum transfer transaction and should be included in the result.
 ****/
 
-getAllValidTransactions = function(lastMinedTxs, blockNumber) {
+getAllValidTransactions = function(lastMinedTxs, blockNumber, timestamp) {
 
 	console.log("###### lastMinedTxs.length "+lastMinedTxs.length)
 	console.log("###### running for "+blockNumber)
@@ -182,7 +154,7 @@ getAllValidTransactions = function(lastMinedTxs, blockNumber) {
 	console.log('---------------------shortlisted txs');
 	console.log("regularTxs.length "+regularTxs.length)
 	console.log("store in mongo for "+blockNumber)
-	return migrate_to_mongo(regularTxs); //MONGO
+	return migrate_to_mongo(regularTxs, timestamp); //MONGO
 
 }
 
@@ -214,14 +186,14 @@ Migrate shortlisted data to mongod
 txs : Array of txs which are valid eth transfer tx
 
 ***/
-migrate_to_mongo = function(txs) {
+migrate_to_mongo = function(txs, timestamp) {
 	return new Promise(function (resolve, reject) {
 
 		if(txs.length == 0) resolve(null);
 
 		var count = 1;
 		_.forEach(txs, function(tx) {
-			tx = to_lower_case(tx);
+			tx = to_lower_case(tx, timestamp);
 			console.log("=======>"+tx.hash);
 			dbo.collection("transactions")//.insertOne(event)
 			.update({'hash': tx.hash}, tx, {upsert: true})
@@ -239,7 +211,7 @@ migrate_to_mongo = function(txs) {
 }
 
 
-to_lower_case = function(obj) {
+to_lower_case = function(obj, timestamp) {
 	for (var k in obj) {
 	    if (typeof obj[k] == "object" && obj[k] !== null)
 	        to_lower_case(obj[k]);
@@ -247,6 +219,7 @@ to_lower_case = function(obj) {
 			obj[k] = obj[k].toLowerCase();
 		}
 	}
+	if(timestamp != undefined) obj.timestamp = timestamp;
 	return obj;
 }
 

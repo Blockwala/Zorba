@@ -228,18 +228,22 @@ parse_blockchain_backwards = function(contractAddress, latest_block_number, symb
 			start_block_local = stop_block_local - bucket_size + 1;
 			p("start block " + start_block_local);
 			p("stop block " + stop_block_local);
+
 			get_transfer_events(contractAddress, start_block_local, stop_block_local)
 				.then(function(events) {
-						p(">>>>FOR  " + stop_block_local);
-						p("LENGTH " + events.length);
-						scan_and_migrate(events, symbol)
-						callback_outer();
-					})
-				.catch(function(error) {
-					p(">>>>3 " + error);
+					p(">>>>FOR  " + stop_block_local);
+					p("LENGTH " + events.length);
+					scan_and_migrate(events, symbol)
 					callback_outer();
 				})
+				.catch(function(error) {
+
+					p(">>>>3 " + error);
+					callback_outer();
+
+				})
 	  		}, function(err) {
+
 			    if( err ) {
 			      console.log(err);
 			      reject(err);
@@ -248,6 +252,7 @@ parse_blockchain_backwards = function(contractAddress, latest_block_number, symb
 				  p("Done")
 				  resolve("done");
 			    }
+
 			});
 	});
 }

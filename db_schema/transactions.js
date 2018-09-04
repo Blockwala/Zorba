@@ -32,7 +32,8 @@ var transactions = mongoose.Schema({
     to: String,
     gas: Number,
     gasPrice: Number,
-    value: String //convert to int and devide by 8 after getting
+    value: String, //convert to int and devide by 8 after getting
+    timestamp: Number
 });
 
 //todo create indexes
