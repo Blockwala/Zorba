@@ -31,7 +31,7 @@ start = function() {
 		console.log(buckets)
 		console.log(bucket_size)
 
-		for(var i = 0; i < buckets; i++) {
+		for(var i = 2; i < buckets; i++) {
 			index.push(i)
 		}
 
@@ -47,7 +47,7 @@ start = function() {
 			.find({})
 			.limit(limit)
 			.skip(skip)
-			.sort({"timestamp": 1}); //make sure this is indexed
+			.sort({"number": 1}); //make sure this is indexed
 
 			cursor.forEach(
 				function(doc) {
