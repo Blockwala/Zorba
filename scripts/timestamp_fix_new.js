@@ -6,7 +6,7 @@ const request = require('request');
 
 var dbo;
 
-MongoClient.connect('mongodb://explorer.blockwala.io:27017', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017', function(err, db) {
   if (err) {
   	throw err;
   } else {
@@ -18,7 +18,7 @@ MongoClient.connect('mongodb://explorer.blockwala.io:27017', function(err, db) {
 
 start = function() {
 
-	var collection = dbo.collection("transfers");
+	var collection = dbo.collection("transferss");
 	var blockCollection = dbo.collection("blocks");
 
 	blockCollection //change collection here
@@ -31,7 +31,7 @@ start = function() {
 		console.log(buckets)
 		console.log(bucket_size)
 
-		for(var i = 2; i < buckets; i++) {
+		for(var i = 0; i < buckets; i++) {
 			index.push(i)
 		}
 
@@ -49,19 +49,25 @@ start = function() {
 			.skip(skip)
 			.sort({"number": 1}); //make sure this is indexed
 
+			var q = async.queue(function (doc, callback) {
+					  	// code for your update
+					  	console.log(doc.timestamp);
+						console.log(doc.number)
+						collection.updateMany({"blockNumber": doc.number}, {"$set":{timestamp: doc.timestamp}},  { upsert: true }, callback)
+					}, Infinity);
+
 			cursor.forEach(
-				function(doc) {
-					console.log(doc.timestamp);
-					console.log(doc.number)
-					collection.updateMany({"blockNumber": doc.number}, {"$set":{timestamp: doc.timestamp}},  { upsert: true })
-					var waitTill = new Date(new Date().getTime() + .05 * 1000);
-					while(waitTill > new Date()){}
+				function(doc) {s
+  					if (doc) q.push(doc); // dispatching doc to async.queue
 				},
-				function(err) { 
+				function(err) {
 
-					console.log("End")
-					callback_outer();
-
+					q.drain = function() {
+						  if (cursor.isClosed()) {
+						    callback_outer();
+						    console.log("End")
+						  }
+						}
 				})
 		});
 
