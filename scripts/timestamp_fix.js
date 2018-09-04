@@ -6,7 +6,7 @@ const request = require('request');
 
 var dbo;
 
-MongoClient.connect('mongodb://localhost:27017', function(err, db) {
+MongoClient.connect('mongodb://explorer.blockwala.io:27017', function(err, db) {
   if (err) {
   	throw err;
   } else {
@@ -52,14 +52,20 @@ start = function() {
 			cursor.forEach(
 				function(doc) {
 
-					block =  blockCollection.find({"number": doc.blockNumber}, {"timestamp":1})
+					blockCollection
+					.find({"number": doc.blockNumber}, {"timestamp":1})
+					.toArray(function(err, res) {
+						block = res[0]
+						if(block != undefined && block.timestamp != undefined) {
+							doc.timestamp = block.timestamp
 
-					doc.timestamp = block.timestamp
+							console.log(doc.timestamp) //change var if collection change
 
-					console.log(doc.timestamp) //change var if collection change
-
-					collection
-					.update({'hash': doc.hash}, doc, {upsert: true}) //change var if collection change
+							collection
+							.update({'hash': doc.hash}, doc, {upsert: true}) //change var if collection change
+						}
+						
+					});
 
 				},
 				function(err) { 
