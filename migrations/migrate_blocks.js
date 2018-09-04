@@ -10,7 +10,7 @@ const request = require('request');
 var erc20_live_tokens = require('./erc20_live_tokens.json');
 
 var bucketSize = 1000000;
-var differential = 23000; //keep it 0 for first time run
+var differential = 160120; //keep it 0 for first time run
 
 var dbo;
 
@@ -39,6 +39,11 @@ shall_we_begin = function() {
 						.then(function(response) {
 
 							response = to_lower_case(response);
+
+							if(response == null || response == undefined) {
+								console.log("null for "+blockNumber)
+								callback();
+							}
 
 							dbo.collection("blocks")
 								.update({'number': response.number}, response, {upsert: true})
