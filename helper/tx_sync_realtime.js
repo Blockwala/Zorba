@@ -61,9 +61,14 @@ sync.ethTransfer = function(lastMinedTxs, web3, timestamp) {
 migrateEthToMongo = function(txs, timestamp) {
 	_.forEach(txs, function(tx) {
 		tx = to_lower_case(tx, timestamp);
+		console.log(tx.hash)
 		ethTxdb.UpdateOrInsert(tx)
-		.then()
-		.catch()
+		.then(function(res) {
+			console.log(res)
+		})
+		.catch(function(error) {
+			console.log(error)
+		})
 	})
 }
 
@@ -154,7 +159,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 					 		.Contract(erc20ContractAbi, erc20Address)
 						    .getPastEvents('Transfer', options, function(error, events) {
 		                        if(error) {
-		                            console.log("error "+error); 
+		                            console.log("..error "+error); 
 		                        }
 		                        transferEvents = _.concat(transferEvents, events);
 		                        callback_inner();
@@ -165,7 +170,6 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
         }, function(err) {
 			    if( err ) {
 			      console.log(err);
-			      reject(err);
 			    } else {
 				  //Run all tasks in parallel
 				  async.parallel(asyncTasks, function(err, results) {
@@ -187,8 +191,11 @@ sync.storeInMongo = function(transferEvents, timestamp) {
 		if(event == undefined) return;
 		event = to_lower_case(event, timestamp)
 		erc20Txdb.UpdateOrInsert(event)
-		.then()
-		.catch()
+		.then(function(res) {
+		})
+		.catch(function(error){
+			console.log(error)
+		})
 	})
 }
 
