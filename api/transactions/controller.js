@@ -8,7 +8,7 @@ var config = require('config');
 transactions.getState = function(req, res) {
 	web3_helper.getGasPrice()
 		 .then((gasprice) => {
-	            res.status(200).send({"gas_price": gasprice});
+	            res.status(200).send({"gas_price": gasprice, "gas_limit": "21000"});
 	        })
 	        .catch((error) => {
 	            res.status(500).send({"error": error});
