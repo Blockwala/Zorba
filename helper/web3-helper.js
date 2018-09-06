@@ -124,17 +124,14 @@ helper.subscribeToEvents = (contract) => {
 
 /**
  * @Aim:
- * Returns the current gas price oracle. 
+ * Returns Promise for gas price. use in catch then flow to get current price of the gas.
  * The gas price is determined by the last few blocks median gas price.
  * 
  * @Returns:
  * default gas price in wei
  */
 helper.getGasPrice = () => {
-    return web3.eth.getGasPrice()
-        .then((gasprice) => {
-            return gasprice;
-        });
+    return web3.eth.getGasPrice();
 };
 
 /**
@@ -269,12 +266,14 @@ helper.makeSendTx = (_tx, _privateKey, successEvent, failureEvent) => {
         });
 }
 
+
+
 helper.listenToNewBlocks = () => {
 
-    // if(config.test == true) {
-    //     console.log("Not running sync for test");
-    //     return;
-    // }
+    if(config.test == true) {
+        console.log("Not running sync for test");
+        return;
+    }
 
     // var web3Socket =  new Web3(new Web3.providers.WebsocketProvider(config.get('node_socket_address')));
     console.log("subscribing to "+config.get('node_socket_address'))
