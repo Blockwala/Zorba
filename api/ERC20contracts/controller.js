@@ -150,30 +150,32 @@ address.getAccount = function(req, res) {
     .methods
     .balanceOf(userAddress)
     .call(function(error, result) {
-      var balance = result; 
+      var balance; 
+      
+      if(error || !result || result==0) {
+        //no address found in the contract or balance is zero
+        var response = {"balance": 0, "transactions": [], 'address': userAddress}
+        res.status(200).send(response);
+      }else {
+        balance = result
+        erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
+          .then(function(erc20Txs) {
 
-      if(error || !result) {
-       res.status(500).send(JSON.stringify({"error": errorMessage}));
-      }
+            var transactions = erc20Txs;
 
-      erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
-        .then(function(erc20Txs) {
+            _.forEach(transactions, function(transaction) {
+              transaction = address.convertERC20TxtoEthLikeTx(transaction);
+            })
 
-          var transactions = erc20Txs;
+            var response = {"balance": balance, "transactions": transactions, 'address': userAddress}
 
-          _.forEach(transactions, function(transaction) {
-            transaction = address.convertERC20TxtoEthLikeTx(transaction);
+            res.status(200).send(response);
+
           })
-
-          var response = {"balance": balance, "transactions": transactions, 'address': userAddress}
-
-          res.status(200).send(response);
-
-        })
-        .catch(function(error) {
-          console.log(error)
-          res.status(500).send(error);
-        });
+          .catch(function(error) {
+            res.status(500).send(error);
+          });
+      }
     });
 }
 
