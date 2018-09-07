@@ -45,6 +45,10 @@ sync.ethTransfer = function(lastMinedTxs, web3, timestamp) {
 
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
 
+	_.forEach(liveErc20TokenAddresses, function(address){
+		address = address.toLowerCase();
+	})
+
 	//shortlist non erc20 tx from list of erc20 address we have
 	var regularTxs = _.filter(lastMinedTxs, function(tx) {
 		if (tx == null || tx == undefined || tx.to == undefined || tx.value == undefined || tx.value == 0) {
@@ -103,6 +107,15 @@ sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3, timesta
 
 	var txRecievers = _.map(lastMinedTxs, 'to');
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
+
+	_.forEach(txRecievers, function(address){
+		address = address.toLowerCase();
+	})
+
+	_.forEach(liveErc20TokenAddresses, function(address){
+		address = address.toLowerCase();
+	})
+
 	var blockNumber = undefined;
 
 	if(lastMinedTxs.length > 0) {
@@ -159,7 +172,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 					 		.Contract(erc20ContractAbi, erc20Address)
 						    .getPastEvents('Transfer', options, function(error, events) {
 		                        if(error) {
-		                            console.log("..error "+error); 
+		                            console.log("..error "+error);
 		                        }
 		                        transferEvents = _.concat(transferEvents, events);
 		                        callback_inner();
