@@ -24,11 +24,7 @@ transactions.broadcastTxs = function(req, res) {
     'https://api.blockcypher.com/v1/eth/main/txs/push?token='+blockCypherAPI.token,
     { json: { "tx": txHash } },
     function (error, response, body) {
-	        if (!error && response.statusCode == 200) {
-	            res.status(200).send(body);
-	        }else{
-	        	res.status(500).send(body);
-	        }
+    		res.status(response.statusCode).send(response.body);
    	 	}
 	);
 
