@@ -44,8 +44,8 @@ sync.newBlockMined = function (blockHash, web3) {
 sync.ethTransfer = function(lastMinedTxs, web3, timestamp) {
 
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
-
-	_.forEach(liveErc20TokenAddresses, function(address){
+ 
+	_.forEach(liveErc20TokenAddresses, function(address) {
 		address = address.toLowerCase();
 	})
 
@@ -68,10 +68,10 @@ migrateEthToMongo = function(txs, timestamp) {
 		console.log(tx.hash)
 		ethTxdb.UpdateOrInsert(tx)
 		.then(function(res) {
-			console.log(res)
+
 		})
 		.catch(function(error) {
-			console.log(error)
+
 		})
 	})
 }
@@ -108,12 +108,14 @@ sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3, timesta
 	var txRecievers = _.map(lastMinedTxs, 'to');
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
 
-	_.forEach(txRecievers, function(address){
-		address = address.toLowerCase();
+	txRecievers = txRecievers.map(function(address){
+		if(address != null)
+		return address.toLowerCase();
 	})
 
-	_.forEach(liveErc20TokenAddresses, function(address){
-		address = address.toLowerCase();
+	liveErc20TokenAddresses = liveErc20TokenAddresses.map(function(address) {
+		if(address != null)
+		return address.toLowerCase();
 	})
 
 	var blockNumber = undefined;
@@ -166,6 +168,8 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
     var asyncTasks = [];
     var transferEvents = [];
 
+    console.log(erc20AddressesForWhichTxOccurredInLastBlock)
+
     async.eachSeries(erc20AddressesForWhichTxOccurredInLastBlock, function(erc20Address, callback_outer) {
         	var task =	function(callback_inner) {
 					 		new web3.eth
@@ -191,7 +195,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 					      throw err;
 					    } else {
 					    	console.log("--------")
-					    	// console.log(JSON.stringify(transferEvents));
+					    	console.log(transferEvents.length);
 					    	sync.storeInMongo(transferEvents, timestamp)
 					    }
 					});
@@ -205,6 +209,7 @@ sync.storeInMongo = function(transferEvents, timestamp) {
 		event = to_lower_case(event, timestamp)
 		erc20Txdb.UpdateOrInsert(event)
 		.then(function(res) {
+			console.log(res)
 		})
 		.catch(function(error){
 			console.log(error)
