@@ -9,7 +9,7 @@ var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
 var erc20_live_tokens = require('./erc20_live_tokens.json');
 
-var bucketSize = 1000000;
+var bucketSize = 100000;
 var differential = 160120; //keep it 0 for first time run
 
 var dbo;

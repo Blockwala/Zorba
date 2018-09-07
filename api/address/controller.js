@@ -26,7 +26,6 @@ address.getBalance = function(req, res) {
 
 
 address.getAccountInformation = function(req, res) {
-	console.log(req.query)
 	var ethAddress = req.query.address;
 
 	if(ethAddress == undefined) {

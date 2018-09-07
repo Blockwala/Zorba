@@ -14,7 +14,7 @@ erc20TxTransfers.findOne = function(_coinAddress, _userAddress, _requiredFields)
     	]
     }
     
-    return erc20Tx.find(query).select(_requiredFields);
+    return erc20Tx.find(query).select(_requiredFields).limit(100);
 }
 
 

@@ -4,7 +4,7 @@ var Promise = require("bluebird");
 var web3_helper = require('../../helper/web3-helper.js');
 var config = require('config');
 var erc20Txdb = require('../../dba/erc20Txdb.js')
-
+var _ = require('lodash');
 
 /**
 
@@ -120,7 +120,7 @@ address.getTransactionsFromContractForUser = function(req, res) {
 var userAddress = req.params.user_address;
 var contractAddress = req.params.contract_address;
 // var requiredFields = ['returnValues', 'blockHash', 'blockNumber', 'transactionHash', 'symbol', 'address'];
-var requiredFields = 'returnValues blockHash blockNumber transactionHash symbol address';
+var requiredFields = 'returnValues blockHash blockNumber transactionHash symbol address timestamp';
 
 
 erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
@@ -135,9 +135,15 @@ erc20Txdb.findOne(contractAddress, userAddress, requiredFields)
 
 
 address.getAccount = function(req, res) {
-  var userAddress = req.params.user_address;
-  var contractAddress = req.params.contract_address;
-  var requiredFields = 'returnValues blockHash blockNumber transactionHash symbol address';
+  var userAddress = req.query.user_address;
+  var contractAddress = req.query.contract_address;
+
+  if(userAddress == undefined || contractAddress == undefined) {
+      res.status(500).send({"error": "Missing param"});
+      return;
+  }
+
+  var requiredFields = 'returnValues blockHash blockNumber transactionHash symbol address timestamp';
 
   web3_helper
     .getERC20Contract(contractAddress)
@@ -155,15 +161,28 @@ address.getAccount = function(req, res) {
 
           var transactions = erc20Txs;
 
-          var response = { "balance": balance, "transactions": transactions }
+          _.forEach(transactions, function(transaction) {
+            transaction = address.convertERC20TxtoEthLikeTx(transaction);
+          })
+
+          var response = {"balance": balance, "transactions": transactions, 'address': userAddress}
 
           res.status(200).send(response);
+
         })
         .catch(function(error) {
+          console.log(error)
           res.status(500).send(error);
         });
-
     });
+}
+
+address.convertERC20TxtoEthLikeTx = function(tx) {
+  tx['from'] = tx['returnValues']['from']
+  tx['to'] = tx['returnValues']['to']
+  tx['value'] = tx['returnValues']['value']
+  tx['returnValues'] = null;
+  return tx
 }
 
 
