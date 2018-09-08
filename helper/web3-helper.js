@@ -134,6 +134,11 @@ helper.getGasPrice = () => {
     return web3.eth.getGasPrice();
 };
 
+
+helper.getTransactionCount = (address) =>{
+    return web3.eth.getTransactionCount(address);
+}
+
 /**
  * @Aim :
  * From an array of accounts the node controls,

@@ -8,11 +8,25 @@ var request = require('request');
 
 
 transactions.getState = function(req, res) {
+	var address = req.query.address;
 	web3_helper.getGasPrice()
-		 .then((gasprice) => {
-	            res.status(200).send({"gas_price": gasprice, "gas_limit": "21000"});
+		 .then(function(gasPrice) {
+		 	web3_helper.getTransactionCount(address)
+		 		.then((transactionCount) => {
+
+		 			res.status(200).send({"gas_price": gasPrice, 
+		 								  "gas_limit_eth": "21000", 
+		 								  "gas_limit_erc20": "40000",
+		 				 				  "transaction_count":transactionCount});
+
+		 		})
+		 		.catch((error) => {
+		 			console.log(error)
+	            	res.status(500).send({"error": error});
+	        	});
 	        })
 	        .catch((error) => {
+	        	console.log(error)
 	            res.status(500).send({"error": error});
 	        });
 }
