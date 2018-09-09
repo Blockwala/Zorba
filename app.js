@@ -26,10 +26,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/address', addressApiRouter);
-app.use('/erc20_contracts', contractERC20ApiRouter);
-app.use('/transactions', transactionsRouter);
+app.use('/wallet/users', usersRouter);
+app.use('/wallet/address', addressApiRouter);
+app.use('/wallet/erc20_contracts', contractERC20ApiRouter);
+app.use('/wallet/transactions', transactionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
