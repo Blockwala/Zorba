@@ -6,8 +6,10 @@ var logger = require('morgan');
 
 const config = require('config');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+require('./model/Users');
+require('./config/passport');
+
+var usersRouter = require('./api/users/index');
 var addressApiRouter = require('./api/address/index')
 var contractERC20ApiRouter = require('./api/ERC20contracts/index')
 var transactionsRouter = require('./api/transactions/index')
@@ -25,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+
 app.use('/wallet/users', usersRouter);
 app.use('/wallet/address', addressApiRouter);
 app.use('/wallet/erc20_contracts', contractERC20ApiRouter);
