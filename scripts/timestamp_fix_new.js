@@ -47,7 +47,7 @@ start = function() {
 			.find({})
 			.limit(limit)
 			.skip(skip)
-			.sort({"number": 1}); //make sure this is indexed
+			.sort({"number": -1}); //make sure this is indexed
 
 			var q = async.queue(function (doc, callback) {
 					  	// code for your update
