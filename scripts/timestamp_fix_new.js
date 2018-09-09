@@ -18,7 +18,7 @@ MongoClient.connect('mongodb://localhost:27017', function(err, db) {
 
 start = function() {
 
-	var collection = dbo.collection("transactions");
+	var collection = dbo.collection("transfers");
 	var blockCollection = dbo.collection("blocks");
 
 	blockCollection //change collection here
@@ -47,7 +47,7 @@ start = function() {
 			.find({})
 			.limit(limit)
 			.skip(skip)
-			.sort({"number": 1}); //make sure this is indexed
+			.sort({"number": -1}); //make sure this is indexed
 
 			var q = async.queue(function (doc, callback) {
 					  	// code for your update

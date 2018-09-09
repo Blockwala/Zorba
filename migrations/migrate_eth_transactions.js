@@ -8,7 +8,7 @@ var erc20_live_tokens = require('./erc20_live_tokens.json');
 var MongoClient = require('mongodb').MongoClient;
 const request = require('request');
 
-var bucket_size = 100000;
+var bucket_size = 1000;
 
 //Total blocks parsed are bucket_size
 
