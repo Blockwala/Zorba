@@ -38,6 +38,7 @@ var transfers = mongoose.Schema({
     blockHash: String,
     blockNumber: Number,
     transactionHash: String,
+    hash: String,
     transactionIndex: Number,
     from: String,
     to: String,

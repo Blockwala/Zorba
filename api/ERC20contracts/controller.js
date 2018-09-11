@@ -184,6 +184,7 @@ address.convertERC20TxtoEthLikeTx = function(tx) {
   tx['to'] = tx['returnValues']['to']
   tx['value'] = tx['returnValues']['value']
   tx['returnValues'] = null;
+  tx['hash'] = tx['transactionHash']
   return tx
 }
 
