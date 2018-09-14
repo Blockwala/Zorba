@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+require('newrelic');
 var app = require('../app');
 var debug = require('debug')('zorba:server');
 var http = require('http');
