@@ -1,6 +1,6 @@
 var helper = {}; // define a helper object
 
-const Web3 = require('web3'); // Importing web3 
+const Web3 = require('web3'); // Importing web3
 // web3 interacts with solidity
 
 const fs = require('fs'); // to work with filesystems
@@ -26,7 +26,7 @@ var web3Socket = new Web3(new Web3.providers.WebsocketProvider(config.get('node_
 
 
 
-//Abi of ERC20 Generic contract 
+//Abi of ERC20 Generic contract
 var folder = config.get("folder");
 var erc20Generic = JSON.parse(fs.readFileSync(folder+"abi/ERC20_generic.json"));
 var erc20ContractAbi = erc20Generic.abi;
@@ -42,15 +42,15 @@ helper.getERC20Contract = function(contractAddress) {
 
 
 /***
-* 
+*
 * @Aim:
 * gets the Ethereum balance of the address
-* 
+*
 * @Params:
 * address params required
 *
 * @Returns:
-* Promise[] 
+* Promise[]
 *
 ***/
 
@@ -60,16 +60,16 @@ helper.getBalance = function(address) {
 
 
 /***
-* 
+*
 * @Aim:
 * gets the Ethereum block with or without transaction objec
-* 
+*
 * @Params:
 * blockNumber block's number
 * getTxObject should include tx object ? if False(default), includes only tx hashes
 *
 * @Returns:
-* Promise[] 
+* Promise[]
 *
 ***/
 
@@ -79,13 +79,13 @@ helper.getBlock = function(blockNumber, getTxObject) {
 
 
 /***
-* 
+*
 * @Aim:
 * gets the Ethereum last synced block number
-* 
+*
 *
 * @Returns:
-* Promise[] 
+* Promise[]
 *
 ***/
 
@@ -102,10 +102,10 @@ helper.getCurrentProvider = function() {
 /**
  * @Aim:
  * Return an instance of UserTokenSale
- * 
+ *
  * @Params:
  * No params required
- * 
+ *
  * @Returns:
  * A pointer to that contract compiled into JSON
  */
@@ -126,7 +126,7 @@ helper.subscribeToEvents = (contract) => {
  * @Aim:
  * Returns Promise for gas price. use in catch then flow to get current price of the gas.
  * The gas price is determined by the last few blocks median gas price.
- * 
+ *
  * @Returns:
  * default gas price in wei
  */
@@ -143,11 +143,11 @@ helper.getTransactionCount = (address) =>{
  * @Aim :
  * From an array of accounts the node controls,
  * get account at a particular index
- * 
+ *
  * @Logic:
  * web3.eth.getAccounts returns the array of accounts
  * the node controls
- * 
+ *
  * @Params :
  * _index : index at which you want account
  */
@@ -161,11 +161,11 @@ helper.getAccountAtIndex = (_index) => {
 /**
  * @Aim:
  * To check if the connection exists
- * 
+ *
  * @Returns:
  * the current httpProvider
  * if the current provider doesn't exist,
- * it returns null 
+ * it returns null
  */
 helper.checkIsConnected = () => {
     web3.eth.getAccounts()
@@ -176,14 +176,14 @@ helper.checkIsConnected = () => {
 /**
  * @Aim:
  * Signs the given transaction with the given private key
- * 
+ *
  * @Params:
  * _tx : a transaction object,
  * contains gas, to, value(in wei), data etc.
  * _privateKey : the private key using which it will be signed
- * 
+ *
  * @Returns: Object containing:
- * Hash of the message, 
+ * Hash of the message,
  * Signature,
  * RLP encoded transaction, ready to be send using sendSignedTransaction method
  */
@@ -195,10 +195,10 @@ helper.createTx = (_tx, _privateKey) => {
 /**
  * @Aim:
  * Sends a signed transaction using signTransaction method
- * 
+ *
  * @Params:
  * _rawTx: a string, basically contains signed transaction data in HEX format
- * 
+ *
  * @Returns:
  * a promise combined event emitter,
  * which will be resolved when transaction receipt is available
@@ -210,21 +210,21 @@ helper.sendTx = (rawTx) => {
 /**
  * @Aim:
  * Sends the signed transaction to be mined n the blockchain
- * 
+ *
  * @Params:
  * _hashedTx: the signed Tx
  * successEvent: to be run on the success of sending tx
  * failureEvent: if sending of the tx fails
- * 
+ *
  * @Logs:
- * 1. Who is transaction sent to 
+ * 1. Who is transaction sent to
  * 2. Confirmation number of tx, when confirmed by vlocks
  * 3. Tx hash on sending of tx
  * 4. receipt of tx, when tx is mined on the block
  * 5. error, if there, in sending of the tx
- * 
+ *
  * @Events:
- * triggers given success and failure events 
+ * triggers given success and failure events
  */
 helper.makeSendSignedTx = (_hashedTx, successEvent, failureEvent) => {
     var tran  = helper.sendTx(_hashedTx);
@@ -252,10 +252,10 @@ helper.makeSendSignedTx = (_hashedTx, successEvent, failureEvent) => {
 
 /**
  * @Aim:
- * 1. Signs transaction with the given private key 
+ * 1. Signs transaction with the given private key
  * 2. Sends the signed transaction
  * 3. Handles unsuccessful transactions with error
- * 
+ *
  * @Params:
  * 1. _tx : transaction object
  * 2. _private key
@@ -275,10 +275,10 @@ helper.makeSendTx = (_tx, _privateKey, successEvent, failureEvent) => {
 
 helper.listenToNewBlocks = () => {
 
-    if(config.test == true) {
-        console.log("Not running sync for test");
-        return;
-    }
+    // if(config.test == true) {
+    //     console.log("Not running sync for test");
+    //     return;
+    // }
 
     // var web3Socket =  new Web3(new Web3.providers.WebsocketProvider(config.get('node_socket_address')));
     console.log("subscribing to "+config.get('node_socket_address'))
@@ -287,7 +287,7 @@ helper.listenToNewBlocks = () => {
 
     if (!error) {
         // console.log(result);
-        sync.newBlockMined(result.hash, web3); //call to sync tx data
+        sync.newBlockMined(result.parentHash, web3); //call to sync tx data
         return;
     }
         console.log("An error occurred after subscribing, resubscribing to block events");
@@ -318,7 +318,7 @@ helper.logs = () => {
         if (!error)
             console.log(result);
     })
-    .on("data", function(log) { 
+    .on("data", function(log) {
         console.log(log);
     })
     .on("changed", function(log) {

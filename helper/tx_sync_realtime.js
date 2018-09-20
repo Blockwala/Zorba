@@ -44,7 +44,7 @@ sync.newBlockMined = function (blockHash, web3) {
 sync.ethTransfer = function(lastMinedTxs, web3, timestamp) {
 
 	var liveErc20TokenAddresses = _.map(erc20_live_tokens, 'address');
- 
+
 	_.forEach(liveErc20TokenAddresses, function(address) {
 		address = address.toLowerCase();
 	})
@@ -85,7 +85,7 @@ after identifying
 
 Steps:
 
-pull txReceivers from the mined tx, its an array of addresses of ERC20 and non-erc20 
+pull txReceivers from the mined tx, its an array of addresses of ERC20 and non-erc20
 
 pull liveErc20TokenAddresses, the ones we support
 
@@ -130,7 +130,7 @@ sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3, timesta
 
 	// console.log(erc20AddressesForWhichTxOccurredInLastBlock);
 
-	erc20_txs = _.filter(lastMinedTxs, function(tx) {  
+	erc20_txs = _.filter(lastMinedTxs, function(tx) {
 		if(tx == null || tx == undefined || tx.to == null) {
 			return false;
 		}
@@ -139,8 +139,8 @@ sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3, timesta
 
 	txHashesOfLastMinedErc20Txs = _.map(erc20_txs, 'hash');
 
-	sync.getTransferEvents(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber, timestamp); 
-	
+	sync.getTransferEvents(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber, timestamp);
+
 }
 
 /**
@@ -163,7 +163,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 	options['toBlock'] = Number(blockNumber);
 
 
-    // console.log(">>>>options "+JSON.stringify(options)); 
+    // console.log(">>>>options "+JSON.stringify(options));
 
     var asyncTasks = [];
     var transferEvents = [];
