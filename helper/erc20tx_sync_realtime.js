@@ -56,7 +56,7 @@ sync.newBlockMined = function (blockHash, web3) {
 				            	callback_inner();
 				            });
 				        }
-        	
+
             asyncTasks.push(task);
             callback_outer();
         }, function(err) {
@@ -127,7 +127,7 @@ after identifying
 
 Steps:
 
-pull txReceivers from the mined tx, its an array of addresses of ERC20 and non-erc20 
+pull txReceivers from the mined tx, its an array of addresses of ERC20 and non-erc20
 
 pull liveErc20TokenAddresses, the ones we support
 
@@ -161,14 +161,14 @@ sync.matchErc20LiveTokensWithLastMinedTxs = function(lastMinedTxs, web3) {
 
 	// console.log(erc20AddressesForWhichTxOccurredInLastBlock);
 
-	erc20_txs = _.filter(lastMinedTxs, function(tx) {  
+	erc20_txs = _.filter(lastMinedTxs, function(tx) {
 		return (_.indexOf(erc20AddressesForWhichTxOccurredInLastBlock, tx.to.toString()) > -1);
 	 });
 
 	txHashesOfLastMinedErc20Txs = _.map(erc20_txs, 'hash');
 
-	sync.getTransferEvents(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber); 
-	
+	sync.getTransferEvents(txHashesOfLastMinedErc20Txs, erc20AddressesForWhichTxOccurredInLastBlock, web3, blockNumber);
+
 }
 
 /**
@@ -191,7 +191,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 	options['toBlock'] = Number(blockNumber);
 
 
-    // console.log(">>>>options "+JSON.stringify(options)); 
+    // console.log(">>>>options "+JSON.stringify(options));
 
     var asyncTasks = [];
     var transferEvents = [];
@@ -202,7 +202,7 @@ sync.getTransferEvents = function(txHashesOfLastMinedErc20Txs, erc20AddressesFor
 					 		.Contract(erc20ContractAbi, erc20Address)
 						    .getPastEvents('Transfer', options, function(error, events) {
 		                        if(error) {
-		                            console.log("error "+error); 
+		                            console.log("error "+error);
 		                        }
 		                        transferEvents = _.concat(transferEvents, events);
 		                        callback_inner();
