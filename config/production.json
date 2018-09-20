@@ -1,7 +1,0 @@
-{
- "node_address": "http://localhost:8545",
- "node_socket_address": "ws://localhost:8546",
- "folder": "/data/ethereum/Zorba/",
- "test": false,
- "mongo": "mongodb://localhost:27017/ethereum"
-}

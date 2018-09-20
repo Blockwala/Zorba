@@ -1,7 +1,0 @@
-{
- "node_address": "https://mainnet.infura.io/<API_TOKEN>",
- "node_socket_address": "wss://mainnet.infura.io/ws/<API_TOKEN>",
- "folder": "/data/ethereum/Zorba/",
- "test": false,
- "mongo": "mongodb://localhost:27017/ethereum"
-}

@@ -3,3 +3,4 @@ nohup.out
 newrelic.js
 api/transactions/api_token.json
 package-lock.json
+config/*
