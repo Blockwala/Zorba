@@ -1,3 +1,5 @@
 node_modules/
 nohup.out
+newrelic.js
 api/transactions/api_token.json
+package-lock.json
