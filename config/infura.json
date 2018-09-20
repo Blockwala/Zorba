@@ -1,0 +1,7 @@
+{
+ "node_address": "https://mainnet.infura.io/821da8afced9423483b38fca0afe335c",
+ "node_socket_address": "wss://mainnet.infura.io/ws/821da8afced9423483b38fca0afe335c",
+ "folder": "/Users/karanahuja/Workspace/Ethereum/Zorba/",
+ "test": true,
+ "mongo": "mongodb://localhost:27017/ethereum"
+}
